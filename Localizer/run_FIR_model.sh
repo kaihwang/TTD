@@ -113,8 +113,7 @@ for s in 605; do
 	3dmaskdump -mask PPAmasked.nii.gz -quiet PPAmasked.nii.gz | sort -k4 -n -r | head -n 255 | 3dUndump -master PPAmasked.nii.gz -ijk -prefix PPA_indiv_ROI.nii.gz stdin
 	
 	#create V1 mask 
-	3dmaskdump -mask home/despoB/kaihwang/TRSE/TTD/ROIs/vismask.nii.gz \
-	-quiet Localizer_stats+tlrc[1] | sort -k4 -n -r | head -n 1 | 3dUndump -master FFAmasked.nii.gz -srad 8 -ijk -prefix V1_indiv_ROI.nii.gz stdin
+	3dmaskdump -mask /home/despoB/kaihwang/TRSE/TTD/ROIs/vismask.nii.gz -quiet Localizer_stats+tlrc[1] | sort -k4 -n -r | head -n 1 | 3dUndump -master FFAmasked.nii.gz -srad 8 -ijk -prefix V1_indiv_ROI.nii.gz stdin
 
 
 done
