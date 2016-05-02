@@ -24,15 +24,23 @@ def write_stimtime(filepath, inputvec):
 					f.write(np.array2string(np.around(val,2)).replace('\n','')[4:-1] + '\n') 
 			f.close()
 
+
+
 for s in Subjects:
 
-	for site in ['F', 'M', 'S']:
+	for ROI in ['F', 'M', 'S']:
 
-		fn = '/home/despoB/TRSEPPI/TTD/Scripts/%s_%s_run_order' %(s, site)
-		
+		#fix issue with inconsistent naming
+		if ROI == 'F':
+			site = 'FEF'
+		if ROI == 'M':
+			site = 'MFG'
+		if ROI == 'S':
+			site = 'S1'		
+
 		timing_logs = []
 		for ses in [3,2,1]:
-			filestring = 'fMRI_Data_%s_%s_session%s*.txt' %(s, site, ses)
+			filestring = 'fMRI_Data_%s_%s_session%s*.txt' %(s, ROI, ses)
 			timing_logs.append(glob.glob(filestring)[0]) #files to be loaded
 
 		print(timing_logs)
@@ -46,6 +54,7 @@ for s in Subjects:
 
 		# extract the order of each block condition and save to a text file
 		run_order = df.groupby(['Block', 'Condition', 'MotorMapping']).sum().reset_index()[['Block', 'Condition', 'MotorMapping']]
+		fn = '/home/despoB/TRSEPPI/TTD/Scripts/%s_%s_run_order' %(s, site)
 		if os.path.isfile(fn) is False:			
 			run_order[['Condition','MotorMapping']].to_csv(fn, index=None, header=None, )
 		
