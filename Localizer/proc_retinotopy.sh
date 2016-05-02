@@ -1,7 +1,7 @@
 
 WD='/home/despoB/TRSEPPI/TTD'
 
-for s in 602; do
+for s in 603 604; do
 
 	cd ${WD}/${s}/Loc/
 
@@ -9,7 +9,7 @@ for s in 602; do
 	-period_pol 20 \
 	-period_ecc 0 \
 	-pre_pol 0 \
-	-pre_ecc 0 \	
+	-pre_ecc 0 \
 	-nwedges 1 \
 	-no_tshift \
 	-noVR \

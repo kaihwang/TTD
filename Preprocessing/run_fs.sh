@@ -1,6 +1,6 @@
 WD='/home/despoB/TRSEPPI/TTD'
 
-for s in 604; do
+for s in 605; do
 
 	cd ${WD}/${s}/Loc/MPRAGE
 	recon-all -all -subjid ${s} -i mprage.nii.gz

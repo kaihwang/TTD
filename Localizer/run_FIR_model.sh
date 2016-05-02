@@ -5,7 +5,7 @@ WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/Scripts'
 
 
-for s in 602 603; do
+for s in 605; do
 	cd ${WD}/${s}/Loc
 	rm *FIR*
 	rm *nusiance*
@@ -42,7 +42,7 @@ for s in 602 603; do
 	cat $(/bin/ls loc_run*/motion.par | sort -V) > ${WD}/${s}/Loc/motion.1D
 
 
-	for run in 1 2 3 4 5 6 7 8; do
+	for run in 1 2 3 4 5 6; do
 		
 		if [ ! -e ${WD}/${s}/Loc/localizer_run${run}.nii.gz ]; then
 			ln -s ${WD}/${s}/Loc/loc_run${run}/nswktm_functional_4.nii.gz ${WD}/${s}/Loc/localizer_run${run}.nii.gz

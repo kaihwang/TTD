@@ -20,6 +20,7 @@ for s in 601; do
 		-constrain_to_template y \
 		-4d_slice_motion \
 		-no_hp \
+		-cleanup \
 		-custom_slice_times detect \
 		-delete_dicom archive \
 		-smoothing_kernel 4
