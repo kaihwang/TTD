@@ -3,9 +3,13 @@
 
 WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/Scripts'
+TRrange=(3..154 158..309 313..464)
 
 for s in 602; do
 	for site in FEF MFG S1; do
+
+		mkdir ${WD}/${s}/${site}/1Ds
+		
 		if [ -d ${WD}/${s}/${site}/ ]; then
 
 			cd ${WD}/${s}/${site}/
@@ -108,7 +112,32 @@ for s in 602; do
 				-errts ${WD}/${s}/${site}/${s}_FIR_${condition}_errts.nii.gz \
 				-allzero_OK
 			done	
-		fi			
+		fi
+
+		#after FIR model, get TS for MTD
+		for dset in nusiance FIR; do
+			for condition in FH Fp HF Hp; do 
+
+				## do visual coupling
+				# save TS 
+				# every TS should be 152 elements long! first 3 volumes excluded!
+				for run in 1 2 3; do
+
+					#save temp nii output
+					3dTcat -prefix /tmp/${s}_${site}/${dset}_Reg_${condition}_errts_run${run}.nii.gz ${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}]
+					
+					3dmaskave -mask ${WD}/${s}/Loc/FFA_indiv_ROI.nii.gz -q \
+					${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}] > ${WD}/${s}/${site}/1Ds/${dset}_Reg_${condition}_FFA_run${run}.1D
+
+					3dmaskave -mask ${WD}/${s}/Loc/PPA_indiv_ROI.nii.gz -q \
+					${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}] > ${WD}/${s}/${site}/1Ds/${dset}_Reg_${condition}_PPA_run${run}.1D
+
+					3dmaskave -mask ${WD}/${s}/Loc/V1_indiv_ROI.nii.gz -q \
+					${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}] > ${WD}/${s}/${site}/1Ds/${dset}_Reg_${condition}_VC_run${run}.1D
+
+				done
+			done
+		done
 	done
 done
 
