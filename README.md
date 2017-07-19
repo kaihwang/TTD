@@ -1,2 +1,2 @@
 # TTD
-for processing TTD project data
+for processing TTD and ERTTD project data

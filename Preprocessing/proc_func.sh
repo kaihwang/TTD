@@ -4,7 +4,7 @@ WD='/home/despoB/TRSEPPI/TTD'
 
 for s in 601; do
 
-	for site in FEF MFG S1; do
+	for site in loc MFG S1; do
 
 		if [ -d ${WD}/${s}/${site}/${site}_run1 ]; then
 
@@ -28,9 +28,12 @@ for s in 601; do
 				-custom_slice_times detect \
 				-delete_dicom archive \
 				-smoothing_kernel 4
+				#preprocessFunctional -resume
+
 			fi
 		fi
 	done
 done
 
 
+#-dicom "IM*" \

@@ -8,7 +8,7 @@ import numpy as np
 #from ggplot import *
 
 os.chdir('/home/despoB/kaihwang/TRSE/TTD')
-Subjects = glob.glob('6*')
+Subjects = [601, 603, 602, 605]#[glob.glob('6*')]
 
 ROIs = ['FFA', 'PPA', 'VC']
 Conditions = ['FH', 'HF', 'Fp', 'Hp']

@@ -9,7 +9,7 @@ import os.path
 #parse block order
 os.chdir('/home/despoB/kaihwang/TRSE/TTD')
 #Subjects = glob.glob('5*')
-Subjects = [602]
+Subjects = [601, 602, 603, 605]
 os.chdir('/home/despoB/kaihwang/TRSE/TTD/Scripts/Logs')
 
 

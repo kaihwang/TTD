@@ -8,7 +8,7 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD'
 
 cd ${WD}
 
-for Subject in 603; do
+for Subject in 601 602 603 605; do
 
 	# if [ ! -e ${WD}/${Subject}/gPPI_PPA_Full_model_stats_REMLvar+tlrc.HEAD ]; then
 	# 	sed "s/s in 503/s in ${Subject}/g" < ${SCRIPTS}/run_PPI_model.sh> ~/tmp/PPI_${Subject}.sh
