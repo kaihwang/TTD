@@ -1,0 +1,6 @@
+-o /home/despoB/kaihwang/tmp
+-e /home/despoB/kaihwang/tmp
+-j yes
+-m eas
+-pe threaded 4
+-M kai.hwang@gmail.com

@@ -1,0 +1,5 @@
+-o /home/despoB/kaihwang/tmp
+-e /home/despoB/kaihwang/tmp
+-j yes
+-m eas
+-M kai.hwang@gmail.com
