@@ -2,4 +2,5 @@
 -e /home/despoB/kaihwang/tmp
 -j yes
 -m eas
+-l mem_free=9G
 -M kai.hwang@gmail.com

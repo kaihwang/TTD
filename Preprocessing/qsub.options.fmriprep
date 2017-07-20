@@ -3,4 +3,5 @@
 -j yes
 -m eas
 -pe threaded 4
+-l mem_free=12G
 -M kai.hwang@gmail.com
