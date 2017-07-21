@@ -7,10 +7,10 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 
 #run_mriqc.sh or run_fmriprep.sh
 
-# submit \
-# 	-s ${SCRIPTS}/run_mriqc.sh \
-# 	-f ${SCRIPTS}/test.subjects \
-# 	-o ${SCRIPTS}/qsub.options.mriqc
+submit \
+	-s ${SCRIPTS}/run_mriqc.sh \
+	-f ${SCRIPTS}/test.subjects \
+	-o ${SCRIPTS}/qsub.options.mriqc
 
 
 submit \

@@ -10,7 +10,7 @@ cd ${WD}/QC;
 mriqc \
     --participant_label $SUB_ID \
     -m T1w bold \
-    --n_procs 5 \
+    --n_procs 8 \
     --mem_gb 8 \
     --ica \
     --ants-nthreads 3\
