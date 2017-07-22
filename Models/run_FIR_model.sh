@@ -1,143 +1,100 @@
 #!/bin/bash
-# script to run FIR model for each condition.
+# script to run FIR model for each condition. For localization FFA/PPA
 
 WD='/home/despoB/kaihwang/TRSE/TTD'
-SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/Scripts'
-TRrange=(3..154 158..309 313..464)
+SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
+OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 
-for s in 602; do
-	for site in FEF MFG S1; do
+for s in 7002; do
 
-		mkdir ${WD}/${s}/${site}/1Ds
-		
-		if [ -d ${WD}/${s}/${site}/ ]; then
+	if [ ! -d ${OutputDir}/sub-${s}/ses-Loc ]; then
+		mkdir ${OutputDir}/sub-${s}/
+		mkdir ${OutputDir}/sub-${s}/ses-Loc
+	fi
 
-			cd ${WD}/${s}/${site}/
-			rm *FIR*
-			rm *nusiance*
-			
-			# normalize tissue masks to extract nuisance signal
-			fslreorient2std ${WD}/${s}/${site}/MPRAGE/mprage_bet_fast_seg_0.nii.gz ${WD}/${s}/${site}/MPRAGE/mprage_bet_fast_seg_0.nii.gz
-			applywarp --ref=${WD}/${s}/${site}/MPRAGE/mprage_final.nii.gz \
-			--rel \
-			--interp=nn \
-			--in=${WD}/${s}/${site}/MPRAGE/mprage_bet_fast_seg_0.nii.gz \
-			--warp=${WD}/${s}/${site}/MPRAGE/mprage_warpcoef.nii.gz \
-			-o ${WD}/${s}/${site}/CSF_orig.nii.gz
-			rm ${WD}/${s}/${site}/CSF_erode.nii.gz
-			3dmask_tool -prefix ${WD}/${s}/${site}/CSF_erode.nii.gz -quiet -input ${WD}/${s}/${site}/CSF_orig.nii.gz -dilate_result -1
+	#cd ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func
+	#rm *FIR*
+	#rm *nusiance*
+	#rm Localizer*
+	
+	
+	#concat nuisance regressors
+	#this is the confound variables. we need the last six (13-24)
+	# WhiteMatter	GlobalSignal	stdDVARS	non-stdDVARS	vx-wisestdDVARS	FramewiseDisplacement	
+	# tCompCor00	tCompCor01	tCompCor02	tCompCor03	tCompCor04	tCompCor05
+	# aCompCor00	aCompCor01	aCompCor02	aCompCor03	aCompCor04	aCompCor05	X	Y	Z	RotX	RotY	RotZ
 
-			fslreorient2std ${WD}/${s}/${site}/MPRAGE/mprage_bet_fast_seg_2.nii.gz ${WD}/${s}/${site}/MPRAGE/mprage_bet_fast_seg_2.nii.gz
-			applywarp --ref=${WD}/${s}/${site}/MPRAGE/mprage_final.nii.gz \
-			--rel \
-			--interp=nn \
-			--in=${WD}/${s}/${site}/MPRAGE/mprage_bet_fast_seg_2.nii.gz \
-			--warp=${WD}/${s}/${site}/MPRAGE/mprage_warpcoef.nii.gz \
-			-o ${WD}/${s}/${site}/WM_orig.nii.gz	
-			rm ${WD}/${s}/${site}/WM_erode.nii.gz
-			3dmask_tool -prefix ${WD}/${s}/${site}/WM_erode.nii.gz -quiet -input ${WD}/${s}/${site}/WM_orig.nii.gz -dilate_result -1
-
-			#extract runs for each condition: FH, HF, Fp, Hp
-			for condition in FH HF Fp Hp; do
-				
-				# create motor regressors
-				echo -n "" > ${WD}/${s}/${site}/${condition}_stimtime.1D
-				
-				#create stimtime for each condition
-				for run in $(cat ${SCRIPTS}/${s}_${site}_run_order | grep -n ${condition} | cut -f1 -d:); do
-					
-					if [ ! -e ${WD}/${s}/${site}/${condition}_run${run}.nii.gz ]; then
-						ln -s ${WD}/${s}/${site}/${site}_run${run}/nswktm_functional_4.nii.gz ${WD}/${s}/${site}/${condition}_run${run}.nii.gz
-					fi
-					
-					if [ ! -e ${WD}/${s}/${site}/${condition}_run${run}_motpar.1D ]; then
-						ln -s ${WD}/${s}/${site}/${site}_run${run}/motion.par ${WD}/${s}/${site}/${condition}_run${run}_motpar.1D
-					fi
-
-					sed -n "${run},${run}p" ${SCRIPTS}/${s}_${site}_${condition}_stimtime.1D >> ${WD}/${s}/${site}/${condition}_stimtime.1D
-
-					#nuisance tissue signal
-					3dmaskave -quiet -mask ${WD}/${s}/${site}/CSF_erode.nii.gz ${WD}/${s}/${site}/${condition}_run${run}.nii.gz > ${WD}/${s}/${site}/CSF_TS_${condition}_run${run}.1D
-					3dmaskave -quiet -mask ${WD}/${s}/${site}/WM_erode.nii.gz ${WD}/${s}/${site}/${condition}_run${run}.nii.gz > ${WD}/${s}/${site}/WM_TS_${condition}_run${run}.1D
-					3dmaskave -quiet -mask ${WD}/${s}/${site}/${site}_run${run}/subject_mask.nii.gz ${WD}/${s}/${site}/${condition}_run${run}.nii.gz > ${WD}/${s}/${site}/GS_TS_${condition}_run${run}.1D
-
-				done
-
-				# concat motion regressors and create censor files
-				cat $(/bin/ls ${WD}/${s}/${site}/${condition}_run*_motpar.1D | sort -V) > ${WD}/${s}/${site}/Motion_${condition}_runs.1D
-
-				1d_tool.py -infile ${WD}/${s}/${site}/Motion_${condition}_runs.1D \
-				-set_nruns 3 -show_censor_count -censor_motion 0.3 ${s}_${condition} -censor_prev_TR -overwrite
-
-				#tissue regressors
-				cat $(/bin/ls ${WD}/${s}/${site}/CSF_TS_${condition}_run*.1D | sort -V) > ${WD}/${s}/${site}/RegCSF_${condition}_TS.1D
-				cat $(/bin/ls ${WD}/${s}/${site}/WM_TS_${condition}_run*.1D | sort -V) > ${WD}/${s}/${site}/RegWM_${condition}_TS.1D
-				cat $(/bin/ls ${WD}/${s}/${site}/GS_TS_${condition}_run*.1D | sort -V) > ${WD}/${s}/${site}/RegGS_${condition}_TS.1D
-
-				#run "nuisance model"
-				3dDeconvolve -input $(/bin/ls ${WD}/${s}/${site}/${condition}_run*.nii.gz | sort -V) \
-				-automask \
-				-polort A \
-				-num_stimts 9 \
-				-stim_file 1 ${WD}/${s}/${site}/Motion_${condition}_runs.1D[0] -stim_label 1 motpar1 \
-				-stim_file 2 ${WD}/${s}/${site}/Motion_${condition}_runs.1D[1] -stim_label 2 motpar2 \
-				-stim_file 3 ${WD}/${s}/${site}/Motion_${condition}_runs.1D[2] -stim_label 3 motpar3 \
-				-stim_file 4 ${WD}/${s}/${site}/Motion_${condition}_runs.1D[3] -stim_label 4 motpar4 \
-				-stim_file 5 ${WD}/${s}/${site}/Motion_${condition}_runs.1D[4] -stim_label 5 motpar5 \
-				-stim_file 6 ${WD}/${s}/${site}/Motion_${condition}_runs.1D[5] -stim_label 6 motpar6 \
-				-stim_file 7 ${WD}/${s}/${site}/RegCSF_${condition}_TS.1D -stim_label 7 CSF \
-				-stim_file 8 ${WD}/${s}/${site}/RegWM_${condition}_TS.1D -stim_label 8 WM \
-				-stim_file 9 ${WD}/${s}/${site}/RegGS_${condition}_TS.1D -stim_label 9 GS \
-				-nobucket \
-				-GOFORIT 100 \
-				-noFDR \
-				-errts ${WD}/${s}/${site}/${s}_nusiance_${condition}_errts.nii.gz \
-				-allzero_OK
-
-
-				# run FIR model
-				3dDeconvolve -input ${WD}/${s}/${site}/${s}_nusiance_${condition}_errts.nii.gz \
-				-concat '1D: 0 155 310' \
-				-automask \
-				-polort A \
-				-num_stimts 1 \
-				-stim_times 1 ${WD}/${s}/${site}/${condition}_stimtime.1D 'TENT(-2, 28, 30)' -stim_label 1 ${condition}_FIR \
-				-iresp 1 ${condition}_FIR \
-				-rout \
-				-nocout \
-				-bucket FIR_${condition}_stats \
-				-x1D FIR_${condition}_design_mat \
-				-GOFORIT 100\
-				-noFDR \
-				-errts ${WD}/${s}/${site}/${s}_FIR_${condition}_errts.nii.gz \
-				-allzero_OK
-			done	
-		fi
-
-		#after FIR model, get TS for MTD
-		for dset in nusiance FIR; do
-			for condition in FH Fp HF Hp; do 
-
-				## do visual coupling
-				# save TS 
-				# every TS should be 152 elements long! first 3 volumes excluded!
-				for run in 1 2 3; do
-
-					#save temp nii output
-					3dTcat -prefix /tmp/${s}_${site}/${dset}_Reg_${condition}_errts_run${run}.nii.gz ${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}]
-					
-					3dmaskave -mask ${WD}/${s}/Loc/FFA_indiv_ROI.nii.gz -q \
-					${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}] > ${WD}/${s}/${site}/1Ds/${dset}_Reg_${condition}_FFA_run${run}.1D
-
-					3dmaskave -mask ${WD}/${s}/Loc/PPA_indiv_ROI.nii.gz -q \
-					${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}] > ${WD}/${s}/${site}/1Ds/${dset}_Reg_${condition}_PPA_run${run}.1D
-
-					3dmaskave -mask ${WD}/${s}/Loc/V1_indiv_ROI.nii.gz -q \
-					${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}] > ${WD}/${s}/${site}/1Ds/${dset}_Reg_${condition}_VC_run${run}.1D
-
-				done
-			done
-		done
+	echo "" > ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv
+	echo "" > ${OutputDir}/sub-${s}/ses-Loc/motion.tsv
+	for f in $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run*.tsv | sort -V); do
+		cat ${f} | tail -n+2 | cut -f13-24 >> ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv
+		cat ${f} | tail -n+2 | cut -f19-24 >> ${OutputDir}/sub-${s}/ses-Loc/motion.tsv
 	done
-done
+	
+	#create censor
+	1d_tool.py -infile ${OutputDir}/sub-${s}/ses-Loc/motion.tsv \
+	-set_nruns 12 -show_censor_count -censor_motion 0.2 ${OutputDir}/sub-${s}/ses-Loc/FD0.2 -censor_prev_TR -overwrite
 
+	#run localizer Model
+	if [ ! -f ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIR_errts.nii.gz ]; then
+		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_space-T1w_preproc.nii.gz | sort -V) \
+		-automask \
+		-polort A \
+		-num_stimts 6 \
+		-censor ${OutputDir}/sub-${s}/ses-Loc/FD0.2_censor.1D \
+		-ortvec ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv confounds \
+		-stim_times 1 ${SCRIPTS}/${s}_Loc_FH_stimtime.1D 'TENT(0, 12, 13)' -stim_label 1 FH \
+		-stim_times 2 ${SCRIPTS}/${s}_Loc_HF_stimtime.1D 'TENT(0, 12, 13)' -stim_label 2 HF \
+		-stim_times 3 ${SCRIPTS}/${s}_Loc_Fp_stimtime.1D 'TENT(0, 12, 13)' -stim_label 3 Fp \
+		-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'TENT(0, 12, 13)' -stim_label 4 Hp \
+		-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'TENT(0, 12, 13)' -stim_label 5 F2 \
+		-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'TENT(0, 12, 13)' -stim_label 6 H2 \
+		-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_FIR \
+		-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_FIR \
+		-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_FIR \
+		-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_FIR \
+		-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_FIR \
+		-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_FIR \
+		-gltsym 'SYM: +1*FH +1*Fp +1*F2 -1*HF -1*Hp -1*H2 ' -glt_label 1 F-H \
+		-gltsym 'SYM: +1*FH +1*HF -1*Fp -1*Hp ' -glt_label 2 TD-p \
+		-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
+		-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 4 2B \
+		-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 5 TD \
+		-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 6 p \
+		-gltsym 'SYM: +0.5*FH +0.5*Fp ' -glt_label 7 F \
+		-gltsym 'SYM: +0.5*HF +0.5*Hp ' -glt_label 8 H \
+		-rout \
+		-tout \
+		-bucket ${OutputDir}/sub-${s}/ses-Loc/Localizer_stats \
+		-x1D ${OutputDir}/sub-${s}/ses-Loc/Localizer_design_mat \
+		-GOFORIT 100 \
+		-noFDR \
+		-nocout \
+		-errts ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIR_errts.nii.gz \
+		-allzero_OK
+	fi
+	# create syn link
+	#ln -s ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/anat/sub-${s}_ses-Loc_T1w_preproc.nii.gz ${OutputDir}/sub-${s}/ses-Loc/native_anat.nii.gz
+	#-x1D_stop \
+
+
+	#create FFA PPA masks
+	# 3dTcat -prefix face_v_house_tstat Localizer_stats+tlrc[3]
+	# 3dcalc \
+	# -a face_v_house_tstat+tlrc \
+	# -b /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Group_FFA_mask.nii.gz \
+	# -expr 'ispositive(a*b)' -short -prefix FFAmasked.nii.gz
+	# 3dmaskdump -mask FFAmasked.nii.gz -quiet FFAmasked.nii.gz | sort -k4 -n -r | head -n 255 | 3dUndump -master FFAmasked.nii.gz -ijk -prefix FFA_indiv_ROI.nii.gz stdin
+
+	# 3dcalc \
+	# -a face_v_house_tstat+tlrc \
+	# -b /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Group_PPA_mask.nii.gz \
+	# -expr 'isnegative(a*b)' -short -prefix PPAmasked.nii.gz
+	# 3dmaskdump -mask PPAmasked.nii.gz -quiet PPAmasked.nii.gz | sort -k4 -n -r | head -n 255 | 3dUndump -master PPAmasked.nii.gz -ijk -prefix PPA_indiv_ROI.nii.gz stdin
+	
+	# #create V1 mask 
+	# 3dmaskdump -mask /home/despoB/kaihwang/TRSE/TTD/ROIs/vismask.nii.gz -quiet Localizer_stats+tlrc[1] | sort -k4 -n -r | head -n 1 | 3dUndump -master FFAmasked.nii.gz -srad 8 -ijk -prefix V1_indiv_ROI.nii.gz stdin
+
+
+done
+#
