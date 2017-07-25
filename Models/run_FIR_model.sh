@@ -4,8 +4,11 @@
 WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
+SUB_ID="${SGE_TASK}";
 
-for s in 7002; do
+for s in ${SUB_ID}; do
+
+	echo "running ${SUB_ID}"
 
 	rm -rf ${OutputDir}/sub-${s}/ses-Loc
 	if [ ! -d ${OutputDir}/sub-${s}/ses-Loc ]; then
@@ -14,9 +17,11 @@ for s in 7002; do
 	fi
 
 	for run in $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-*_space-T1w_preproc.nii.gz | grep -o 'run-[[:digit:]][[:digit:]][[:digit:]]'  | grep -o "[[:digit:]][[:digit:]][[:digit:]]"); do
-		3dBlurToFWHM -input ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_space-T1w_preproc.nii.gz \
-		-prefix ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_space-T1w_smoothed_preproc.nii.gz \
-		-FWHM 4
+		if [ ! -e ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_space-T1w_bold_smoothed_preproc.nii.gz ]; then
+			3dBlurToFWHM -input ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_bold_space-T1w_preproc.nii.gz \
+			-prefix ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_space-T1w_bold_smoothed_preproc.nii.gz \
+			-FWHM 4
+		fi	
 	done
 	
 	
@@ -39,8 +44,8 @@ for s in 7002; do
 
 	#run localizer Model
 	#FIR model
-	if [ ! -f ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIR_errts.nii.gz ]; then
-		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_space-T1w_smoothed_preproc.nii.gz | sort -V) \
+	if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIR_errts.nii.gz ]; then
+		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | sort -V) \
 		-automask \
 		-polort A \
 		-num_stimts 6 \
@@ -78,8 +83,8 @@ for s in 7002; do
 	fi
 
 	#SPM basis functions
-	if [ ! -f ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMGmodel_stats+orig.HEAD ]; then
-		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_space-T1w_smoothed_preproc.nii.gz | sort -V) \
+	if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMG_errts.nii.gz ]; then
+		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | sort -V) \
 		-automask \
 		-polort A \
 		-num_stimts 6 \
@@ -177,4 +182,4 @@ for s in 7002; do
 	done
 
 done
-#
+
