@@ -6,10 +6,17 @@
 WD='/home/despoB/TRSEPPI/TTD'
 SCRIPTS='/home/despoB/kaihwang/bin/TTD/Models'
 
+# submit \
+# 	-s ${SCRIPTS}/run_FIR_model.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options.FIR_model
+
+
 submit \
-	-s ${SCRIPTS}/run_FIR_model.sh \
+	-s ${SCRIPTS}/run_MTD_reg_model.sh \
 	-f ${SCRIPTS}/test.subjects \
 	-o ${SCRIPTS}/qsub.options.FIR_model
+
 
 
 

@@ -1,167 +1,131 @@
+#!/bin/bash
 # script to run MTD regression model
-
+export DISPLAY=""
 
 WD='/home/despoB/kaihwang/TRSE/TTD'
-SCRIPT='/home/despoB/kaihwang/TRSE/TTD/Scripts'
-MTD='/home/despoB/kaihwang/bin/TTD/Models'
-TRrange=(3..154 158..309 313..464) #skip first 3 volumens for all runs because of intial transition effects in data
+SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
+OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
+Model='/home/despoB/kaihwang/bin/TTD/Models'
+SUB_ID="${SGE_TASK}";
+#TRrange=(3..154 158..309 313..464) #skip first 3 volumens for all runs because of intial transition effects in data
 
-cd $WD
-for s in 602; do
-	for site in FEF MFG S1; do
+for s in ${SUB_ID}; do
+	for session in Loc; do  #FEF MFG S1
 
-		mkdir /tmp/${s}_${site}/
-		mkdir ${WD}/${s}/${site}/1Ds
-		cd /tmp/${s}_${site}/
+		#Create folder
+		if [ ! -d ${OutputDir}/sub-${s}/ ]; then
+			mkdir ${OutputDir}/sub-${s}/
+		fi
 
-		#repeat for two different datasets
-		for dset in nusiance FIR; do
-			for condition in FH Fp HF Hp; do 
+		if [ ! -d ${OutputDir}/sub-${s}/ses-${session} ]; then	
+			mkdir ${OutputDir}/sub-${s}/ses-${session}
+		fi
 
-				## do visual coupling
-				# save TS 
-				# every TS should be 152 elements long! first 3 volumes excluded!
-				for run in 1 2 3; do
+		#extract TS
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
+			3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
+			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D
+		fi
+		
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
+			3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
+			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D
+		fi	
+		
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
+			3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
+			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
+		fi
+		
+		#create MTD and BC regressors, use ${Model}/create_MTD_regressor.py
+		# the input to that python script is n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path
+		n_runs=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | wc -l)
+		ntp_per_run=$(3dinfo ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_smoothed_preproc.nii.gz | grep -o "time steps = [[:digit:]][[:digit:]][[:digit:]] " | grep -o [[:digit:]][[:digit:]][[:digit:]])
+		window=10 #smoothing window for MTD
+		ffa_path="${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D"
+		ppa_path="${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D"
+		v1_path="${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D"
+		echo "${n_runs} ${ntp_per_run} ${window} ${s} ${session} ${ffa_path} ${ppa_path} ${v1_path}" | python ${Model}/create_MTD_regressors.py
 
-					#save temp nii output
-					3dTcat -prefix /tmp/${s}_${site}/${dset}_Reg_${condition}_errts_run${run}.nii.gz ${WD}/${s}/${site}/${s}_${dset}_${condition}_errts.nii.gz[${TRrange[$(($run-1))]}]
-					
-					3dmaskave -mask ${WD}/${s}/Loc/FFA_indiv_ROI.nii.gz -q \
-					/tmp/${s}_${site}/${dset}_Reg_${condition}_errts_run${run}.nii.gz > /tmp/${s}_${site}/${dset}_Reg_${condition}_FFA_run${run}.1D
-
-					3dmaskave -mask ${WD}/${s}/Loc/PPA_indiv_ROI.nii.gz -q \
-					/tmp/${s}_${site}/${dset}_Reg_${condition}_errts_run${run}.nii.gz > /tmp/${s}_${site}/${dset}_Reg_${condition}_PPA_run${run}.1D
-
-					3dmaskave -mask ${WD}/${s}/Loc/V1_indiv_ROI.nii.gz -q \
-					/tmp/${s}_${site}/${dset}_Reg_${condition}_errts_run${run}.nii.gz > /tmp/${s}_${site}/${dset}_Reg_${condition}_VC_run${run}.1D
-
-					cp /tmp/${s}_${site}/${dset}_Reg_${condition}_FFA_run${run}.1D ${WD}/${s}/${site}/1Ds
-					cp /tmp/${s}_${site}/${dset}_Reg_${condition}_PPA_run${run}.1D ${WD}/${s}/${site}/1Ds
-					cp /tmp/${s}_${site}/${dset}_Reg_${condition}_VC_run${run}.1D ${WD}/${s}/${site}/1Ds
-
-					#loop through windows
-					for w in 5 7 9 11 13 15 17 19; do
-						echo "/tmp/${s}_${site}/${dset}_Reg_${condition}_FFA_run${run}.1D /tmp/${s}_${site}/${dset}_Reg_${condition}_VC_run${run}.1D /tmp/${s}_${site}/${dset}_Reg_w${w}_${condition}_run${run}_VC-FFA.1D ${w}" | python ${MTD}/run_MTD.py
-						echo "/tmp/${s}_${site}/${dset}_Reg_${condition}_PPA_run${run}.1D /tmp/${s}_${site}/${dset}_Reg_${condition}_VC_run${run}.1D /tmp/${s}_${site}/${dset}_Reg_w${w}_${condition}_run${run}_VC-PPA.1D ${w}" | python ${MTD}/run_MTD.py
-					done
-
-				done
-
-				#concat TS
-				#TD regressors
-				for w in 5 7 9 11 13 15 17 19; do
-					cat $(/bin/ls /tmp/${s}_${site}/${dset}_Reg_w${w}_${condition}_run*_VC-FFA.1D | sort -V) > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_${condition}_runs.1D	
-					cat $(/bin/ls /tmp/${s}_${site}/${dset}_Reg_w${w}_${condition}_run*_VC-PPA.1D | sort -V) > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_${condition}_runs.1D	
-				done
-
-				#BC regressors
-				cat $(/bin/ls /tmp/${s}_${site}/${dset}_Reg_${condition}_FFA_run*.1D | sort -V) > /tmp/${s}_${site}/${dset}_BCReg_FFA_${condition}_runs.1D
-				cat $(/bin/ls /tmp/${s}_${site}/${dset}_Reg_${condition}_PPA_run*.1D | sort -V) > /tmp/${s}_${site}/${dset}_BCReg_PPA_${condition}_runs.1D
-				cat $(/bin/ls /tmp/${s}_${site}/${dset}_Reg_${condition}_VC_run*.1D | sort -V) > /tmp/${s}_${site}/${dset}_BCReg_VC_${condition}_runs.1D
-
-				# need to create zero factors for combining TD and P conditions...
-				yes "0" | head -n 456 > /tmp/${s}_${site}/ZEROs
-
-			done
-
-			# messy compiling regressors
-			for w in 5 7 9 11 13 15 17 19; do
-				cat /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_FH_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_FH_all.1D
-				cat /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_FH_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_FH_all.1D
-				cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_HF_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_HF_all.1D
-				cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_HF_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_HF_all.1D
-				cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_Hp_runs.1D /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_Hp_all.1D
-				cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_Hp_runs.1D /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_Hp_all.1D
-				cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_Fp_runs.1D > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_Fp_all.1D
-				cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_Fp_runs.1D > /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_Fp_all.1D
-			done
-
-			cat /tmp/${s}_${site}/${dset}_BCReg_FFA_FH_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_FFA_FH_all.1D
-			cat /tmp/${s}_${site}/${dset}_BCReg_PPA_FH_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_PPA_FH_all.1D
-			cat /tmp/${s}_${site}/${dset}_BCReg_VC_FH_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_VC_FH_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_FFA_HF_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_FFA_HF_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_PPA_HF_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_PPA_HF_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_VC_HF_runs.1D /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_VC_HF_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_FFA_Hp_runs.1D /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_FFA_Hp_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_PPA_Hp_runs.1D /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_PPA_Hp_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_VC_Hp_runs.1D /tmp/${s}_${site}/ZEROs > /tmp/${s}_${site}/${dset}_BCReg_VC_Hp_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_FFA_Fp_runs.1D > /tmp/${s}_${site}/${dset}_BCReg_FFA_Fp_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_PPA_Fp_runs.1D > /tmp/${s}_${site}/${dset}_BCReg_PPA_Fp_all.1D
-			cat /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/ZEROs /tmp/${s}_${site}/${dset}_BCReg_VC_Fp_runs.1D > /tmp/${s}_${site}/${dset}_BCReg_VC_Fp_all.1D
-
-			# run big model!
-			for w in 5 7 9 11 13 15 17 19; do
-				3dDeconvolve \
-				-input /tmp/${s}_${site}/${dset}_Reg_FH_errts_run1.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_FH_errts_run2.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_FH_errts_run3.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_HF_errts_run1.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_HF_errts_run2.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_HF_errts_run3.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_Hp_errts_run1.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_Hp_errts_run2.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_Hp_errts_run3.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_Fp_errts_run1.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_Fp_errts_run2.nii.gz \
-				/tmp/${s}_${site}/${dset}_Reg_Fp_errts_run3.nii.gz \
-				-automask \
-				-polort A \
-				-num_stimts 20 \
-				-stim_file 1 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_FH_all.1D -stim_label 1 MTD_FH_FFA-VC \
-				-stim_file 2 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_FH_all.1D -stim_label 2 MTD_FH_PPA-VC \
-				-stim_file 3 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_HF_all.1D -stim_label 3 MTD_HF_FFA-VC \
-				-stim_file 4 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_HF_all.1D -stim_label 4 MTD_HF_PPA-VC \
-				-stim_file 5 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_Hp_all.1D -stim_label 5 MTD_Hp_FFA-VC \
-				-stim_file 6 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_Hp_all.1D -stim_label 6 MTD_Hp_PPA-VC \
-				-stim_file 7 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_FFA-VC_Fp_all.1D -stim_label 7 MTD_Fp_FFA-VC \
-				-stim_file 8 /tmp/${s}_${site}/${dset}_MTDReg_w${w}_PPA-VC_Fp_all.1D -stim_label 8 MTD_Fp_PPA-VC \
-				-stim_file 9 /tmp/${s}_${site}/${dset}_BCReg_FFA_FH_all.1D -stim_label 9 BC_FH_FFA \
-				-stim_file 10 /tmp/${s}_${site}/${dset}_BCReg_PPA_FH_all.1D -stim_label 10 BC_FH_PPA \
-				-stim_file 11 /tmp/${s}_${site}/${dset}_BCReg_FFA_HF_all.1D -stim_label 11 BC_HF_FFA \
-				-stim_file 12 /tmp/${s}_${site}/${dset}_BCReg_PPA_HF_all.1D -stim_label 12 BC_HF_PPA \
-				-stim_file 13 /tmp/${s}_${site}/${dset}_BCReg_FFA_Hp_all.1D -stim_label 13 BC_Hp_FFA \
-				-stim_file 14 /tmp/${s}_${site}/${dset}_BCReg_PPA_Hp_all.1D -stim_label 14 BC_Hp_PPA \
-				-stim_file 15 /tmp/${s}_${site}/${dset}_BCReg_FFA_Fp_all.1D -stim_label 15 BC_Fp_FFA \
-				-stim_file 16 /tmp/${s}_${site}/${dset}_BCReg_PPA_Fp_all.1D -stim_label 16 BC_Fp_PPA \
-				-stim_file 17 /tmp/${s}_${site}/${dset}_BCReg_VC_FH_all.1D -stim_label 17 BC_FH_VC \
-				-stim_file 18 /tmp/${s}_${site}/${dset}_BCReg_VC_HF_all.1D -stim_label 18 BC_HF_VC \
-				-stim_file 19 /tmp/${s}_${site}/${dset}_BCReg_VC_Hp_all.1D -stim_label 19 BC_Hp_VC \
-				-stim_file 20 /tmp/${s}_${site}/${dset}_BCReg_VC_Fp_all.1D -stim_label 20 BC_Fp_VC \
-				-num_glt 17 \
-				-gltsym 'SYM: +0.5*MTD_FH_FFA-VC +0.5*MTD_HF_PPA-VC' -glt_label 1 MTD_Target \
-				-gltsym 'SYM: +0.5*MTD_HF_FFA-VC +0.5*MTD_FH_PPA-VC' -glt_label 2 MTD_Distractor \
-				-gltsym 'SYM: +0.5*MTD_Fp_FFA-VC +0.5*MTD_Hp_PPA-VC' -glt_label 3 MTD_Target_Baseline \
-				-gltsym 'SYM: +0.5*MTD_Hp_FFA-VC +0.5*MTD_Fp_PPA-VC' -glt_label 4 MTD_Distractor_Baseline \
-				-gltsym 'SYM: +1*MTD_FH_FFA-VC +1*MTD_HF_PPA-VC -1*MTD_Fp_FFA-VC -1*MTD_Hp_PPA-VC' -glt_label 5 MTD_Target-Baseline \
-				-gltsym 'SYM: +1*MTD_HF_FFA-VC +1*MTD_FH_PPA-VC -1*MTD_Fp_FFA-VC -1*MTD_Hp_PPA-VC' -glt_label 6 MTD_Distractor-Baseline \
-				-gltsym 'SYM: +1*MTD_FH_FFA-VC +1*MTD_HF_PPA-VC -1*MTD_HF_FFA-VC -1*MTD_FH_PPA-VC' -glt_label 7 MTD_Target-Distractor \
-				-gltsym 'SYM: +0.5*BC_FH_FFA +0.5*BC_HF_PPA' -glt_label 8 BC_Target \
-				-gltsym 'SYM: +0.5*BC_HF_FFA +0.5*BC_FH_PPA' -glt_label 9 BC_Distractor \
-				-gltsym 'SYM: +0.5*BC_Fp_FFA +0.5*BC_Hp_PPA' -glt_label 10 BC_Target_Baseline \
-				-gltsym 'SYM: +0.5*BC_Hp_FFA +0.5*BC_Fp_PPA' -glt_label 11 BC_Distractor_Baseline \
-				-gltsym 'SYM: +1*BC_FH_FFA +1*BC_HF_PPA -1*BC_Fp_FFA -1*BC_Hp_PPA' -glt_label 12 BC_Target-Baseline \
-				-gltsym 'SYM: +1*BC_HF_FFA +1*BC_FH_PPA -1*BC_Fp_FFA -1*BC_Hp_PPA' -glt_label 13 BC_Distractor-Baseline \
-				-gltsym 'SYM: +1*BC_FH_FFA +1*BC_HF_PPA -1*BC_HF_FFA -1*BC_FH_PPA' -glt_label 14 BC_Target-Distractor \
-				-gltsym 'SYM: +1*BC_FH_VC +1*BC_HF_VC -1*BC_Fp_VC -1*BC_Hp_VC' -glt_label 15 BC_Attn-Baseline_VC \
-				-gltsym 'SYM: +1*BC_FH_VC -1*BC_Fp_VC' -glt_label 16 BC_FH-Baseline_VC \
-				-gltsym 'SYM: +1*BC_HF_VC -1*BC_Hp_VC' -glt_label 17 BC_HF-Baseline_VC \
-				-fout \
-				-rout \
-				-tout \
-				-nocout \
-				-bucket /tmp/${s}_${site}/${dset}_w${w}_MTD_BC_stats \
-				-GOFORIT 100 \
-				-noFDR \
-				-x1D_stop 
-
-				. /tmp/${s}_${site}/${dset}_w${w}_MTD_BC_stats.REML_cmd
+		# run big model!
+		3dDeconvolve \
+		-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
+		-automask \
+		-num_stimts 30 \
+		-stim_file 1 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_FFA-VC.1D -stim_label 1 MTD_FH_FFA-VC \
+		-stim_file 2 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_PPA-VC.1D -stim_label 2 MTD_FH_PPA-VC \
+		-stim_file 3 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_MTD_FFA-VC.1D -stim_label 3 MTD_HF_FFA-VC \
+		-stim_file 4 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_MTD_PPA-VC.1D -stim_label 4 MTD_HF_PPA-VC \
+		-stim_file 5 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_MTD_FFA-VC.1D -stim_label 5 MTD_Hp_FFA-VC \
+		-stim_file 6 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_MTD_PPA-VC.1D -stim_label 6 MTD_Hp_PPA-VC \
+		-stim_file 7 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_MTD_FFA-VC.1D -stim_label 7 MTD_Fp_FFA-VC \
+		-stim_file 8 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_MTD_PPA-VC.1D -stim_label 8 MTD_Fp_PPA-VC \
+		-stim_file 9 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_FFA-VC.1D -stim_label 9 MTD_H2_FFA-VC \
+		-stim_file 10 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_PPA-VC.1D -stim_label 10 MTD_H2_PPA-VC \
+		-stim_file 11 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_FFA-VC.1D -stim_label 11 MTD_F2_FFA-VC \
+		-stim_file 12 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_PPA-VC.1D -stim_label 12 MTD_F2_PPA-VC \
+		-stim_file 13 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_FFA.1D -stim_label 13 BC_FH_FFA \
+		-stim_file 14 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_PPA.1D -stim_label 14 BC_FH_PPA \
+		-stim_file 15 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_FFA.1D -stim_label 15 BC_HF_FFA \
+		-stim_file 16 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_PPA.1D -stim_label 16 BC_HF_PPA \
+		-stim_file 17 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_BC_FFA.1D -stim_label 17 BC_Hp_FFA \
+		-stim_file 18 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_BC_PPA.1D -stim_label 18 BC_Hp_PPA \
+		-stim_file 19 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_BC_FFA.1D -stim_label 19 BC_Fp_FFA \
+		-stim_file 20 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_BC_PPA.1D -stim_label 20 BC_Fp_PPA \
+		-stim_file 21 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_FFA.1D -stim_label 21 BC_F2_FFA \
+		-stim_file 22 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_PPA.1D -stim_label 22 BC_F2_PPA \
+		-stim_file 23 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_FFA.1D -stim_label 23 BC_H2_FFA \
+		-stim_file 24 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_PPA.1D -stim_label 24 BC_H2_PPA \
+		-stim_file 25 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_VC.1D -stim_label 25 BC_FH_VC \
+		-stim_file 26 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_VC.1D -stim_label 26 BC_HF_VC \
+		-stim_file 27 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_BC_VC.1D -stim_label 27 BC_Fp_VC \
+		-stim_file 28 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_BC_VC.1D -stim_label 28 BC_Hp_VC \
+		-stim_file 29 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_VC.1D -stim_label 29 BC_H2_VC \
+		-stim_file 30 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_VC.1D -stim_label 30 BC_F2_VC \
+		-num_glt 34 \
+		-gltsym 'SYM: +0.5*MTD_FH_FFA-VC +0.5*MTD_HF_PPA-VC' -glt_label 1 MTD_Target_1bk \
+		-gltsym 'SYM: +0.5*MTD_HF_FFA-VC +0.5*MTD_FH_PPA-VC' -glt_label 2 MTD_Distractor_1bk \
+		-gltsym 'SYM: +0.5*MTD_Fp_FFA-VC +0.5*MTD_Hp_PPA-VC' -glt_label 3 MTD_Target_categorize \
+		-gltsym 'SYM: +0.5*MTD_Hp_FFA-VC +0.5*MTD_Fp_PPA-VC' -glt_label 4 MTD_Distractor_categorize \
+		-gltsym 'SYM: +0.5*MTD_F2_FFA-VC +0.5*MTD_H2_PPA-VC' -glt_label 5 MTD_Target_2bk \
+		-gltsym 'SYM: +0.5*MTD_H2_FFA-VC +0.5*MTD_F2_PPA-VC' -glt_label 6 MTD_Distractor_2bk \
+		-gltsym 'SYM: +1*MTD_FH_FFA-VC +1*MTD_HF_PPA-VC -1*MTD_Fp_FFA-VC -1*MTD_Hp_PPA-VC' -glt_label 7 MTD_Target_1bk-categorize \
+		-gltsym 'SYM: +1*MTD_F2_FFA-VC +1*MTD_H2_PPA-VC -1*MTD_Fp_FFA-VC -1*MTD_Hp_PPA-VC' -glt_label 8 MTD_Target_2bk-categorize \
+		-gltsym 'SYM: +1*MTD_HF_FFA-VC +1*MTD_FH_PPA-VC -1*MTD_Fp_FFA-VC -1*MTD_Hp_PPA-VC' -glt_label 9 MTD_Distractor_1bk-categorize \
+		-gltsym 'SYM: +1*MTD_H2_FFA-VC +1*MTD_F2_PPA-VC -1*MTD_Fp_FFA-VC -1*MTD_Hp_PPA-VC' -glt_label 10 MTD_Distractor_2bk-categorize \
+		-gltsym 'SYM: +1*MTD_FH_FFA-VC +1*MTD_HF_PPA-VC -1*MTD_HF_FFA-VC -1*MTD_FH_PPA-VC' -glt_label 11 MTD_1bk_Target-Distractor \
+		-gltsym 'SYM: +1*MTD_F2_FFA-VC +1*MTD_H2_PPA-VC -1*MTD_H2_FFA-VC -1*MTD_F2_PPA-VC' -glt_label 12 MTD_2bk_Target-Distractor \
+		-gltsym 'SYM: +1*MTD_F2_FFA-VC +1*MTD_H2_PPA-VC -1*MTD_FH_FFA-VC -1*MTD_HF_PPA-VC' -glt_label 13 MTD_Target_2bk-1bk \
+		-gltsym 'SYM: +1*MTD_H2_FFA-VC +1*MTD_F2_PPA-VC -1*MTD_HF_FFA-VC -1*MTD_FH_PPA-VC' -glt_label 14 MTD_Distractor_2bk-1bk \
+		-gltsym 'SYM: +0.5*BC_FH_FFA +0.5*BC_HF_PPA' -glt_label 15 BC_Target_1bk \
+		-gltsym 'SYM: +0.5*BC_HF_FFA +0.5*BC_FH_PPA' -glt_label 16 BC_Distractor_1bk \
+		-gltsym 'SYM: +0.5*BC_Fp_FFA +0.5*BC_Hp_PPA' -glt_label 17 BC_Target_categorize \
+		-gltsym 'SYM: +0.5*BC_Hp_FFA +0.5*BC_Fp_PPA' -glt_label 18 BC_Distractor_categorize \
+		-gltsym 'SYM: +0.5*BC_F2_FFA +0.5*BC_H2_PPA' -glt_label 19 BC_Target_2bk \
+		-gltsym 'SYM: +0.5*BC_H2_FFA +0.5*BC_F2_PPA' -glt_label 20 BC_Distractor_2bk \
+		-gltsym 'SYM: +1*BC_FH_FFA +1*BC_HF_PPA -1*BC_Fp_FFA -1*BC_Hp_PPA' -glt_label 21 BC_Target_1bk-categorize \
+		-gltsym 'SYM: +1*BC_HF_FFA +1*BC_FH_PPA -1*BC_Fp_FFA -1*BC_Hp_PPA' -glt_label 22 BC_Distractor_1bk-categorize \
+		-gltsym 'SYM: +1*BC_F2_FFA +1*BC_H2_PPA -1*BC_Fp_FFA -1*BC_Hp_PPA' -glt_label 23 BC_Target_2bk-categorize \
+		-gltsym 'SYM: +1*BC_H2_FFA +1*BC_F2_PPA -1*BC_Fp_FFA -1*BC_Hp_PPA' -glt_label 24 BC_Distractor_2bk-categorize \
+		-gltsym 'SYM: +1*BC_F2_FFA +1*BC_H2_PPA -1*BC_FH_FFA -1*BC_HF_PPA' -glt_label 25 BC_Target_2bk-1bk \
+		-gltsym 'SYM: +1*BC_H2_FFA +1*BC_F2_PPA -1*BC_HF_FFA -1*BC_FH_PPA' -glt_label 26 BC_Distractor_2bk-1bk \
+		-gltsym 'SYM: +1*BC_FH_FFA +1*BC_HF_PPA -1*BC_HF_FFA -1*BC_FH_PPA' -glt_label 27 BC_1bk_Target-Distractor \
+		-gltsym 'SYM: +1*BC_F2_FFA +1*BC_H2_PPA -1*BC_H2_FFA -1*BC_F2_PPA' -glt_label 28 BC_2bk_Target-Distractor \
+		-gltsym 'SYM: +1*BC_FH_VC +1*BC_HF_VC -1*BC_Fp_VC -1*BC_Hp_VC' -glt_label 29 BC_1bk-categorize_VC \
+		-gltsym 'SYM: +1*BC_F2_VC +1*BC_H2_VC -1*BC_Fp_VC -1*BC_Hp_VC' -glt_label 30 BC_2bk-categorize_VC \
+		-gltsym 'SYM: +1*BC_F2_VC +1*BC_H2_VC -1*BC_FH_VC -1*BC_HF_VC' -glt_label 31 BC_2bk-1bk_VC \
+		-gltsym 'SYM: +0.5*BC_FH_VC +0.5*BC_HF_VC' -glt_label 32 BC_1bk_VC \
+		-gltsym 'SYM: +0.5*BC_F2_VC +0.5*BC_H2_VC' -glt_label 33 BC_2bk_VC \
+		-gltsym 'SYM: +0.5*BC_Fp_VC +0.5*BC_Hp_VC' -glt_label 34 BC_categorize_VC \
+		-tout \
+		-nocout \
+		-bucket ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats \
+		-GOFORIT 100 \
+		-noFDR  -jobs 8 -x1D_stop
+		#-fout \
+		#-rout \
+		. ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats.REML_cmd
 				
-				mv ${dset}_w${w}_MTD_BC_stats_REML+tlrc* ${WD}/${s}/${site}/
-			done
-		done	
-
-		cd ${WD}/${s} 
-		rm -rf /tmp/${s}_${site}/
 	done
 done
 
