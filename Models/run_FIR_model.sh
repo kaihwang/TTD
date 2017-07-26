@@ -10,16 +10,16 @@ for s in ${SUB_ID}; do
 
 	echo "running ${SUB_ID}"
 
-	rm -rf ${OutputDir}/sub-${s}/ses-Loc
+	
 	if [ ! -d ${OutputDir}/sub-${s}/ses-Loc ]; then
 		mkdir ${OutputDir}/sub-${s}/
 		mkdir ${OutputDir}/sub-${s}/ses-Loc
 	fi
 
 	for run in $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-*_space-T1w_preproc.nii.gz | grep -o 'run-[[:digit:]][[:digit:]][[:digit:]]'  | grep -o "[[:digit:]][[:digit:]][[:digit:]]"); do
-		if [ ! -e ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_space-T1w_bold_smoothed_preproc.nii.gz ]; then
+		if [ ! -e ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_bold_space-T1w_smoothed_preproc.nii.gz ]; then
 			3dBlurToFWHM -input ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_bold_space-T1w_preproc.nii.gz \
-			-prefix ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_space-T1w_bold_smoothed_preproc.nii.gz \
+			-prefix ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-${run}_bold_space-T1w_smoothed_preproc.nii.gz \
 			-FWHM 4
 		fi	
 	done
@@ -51,22 +51,22 @@ for s in ${SUB_ID}; do
 		-num_stimts 6 \
 		-censor ${OutputDir}/sub-${s}/ses-Loc/FD0.2_censor.1D \
 		-ortvec ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv confounds \
-		-stim_times 1 ${SCRIPTS}/${s}_Loc_FH_stimtime.1D 'TENT(0, 12, 13)' -stim_label 1 FH \
-		-stim_times 2 ${SCRIPTS}/${s}_Loc_HF_stimtime.1D 'TENT(0, 12, 13)' -stim_label 2 HF \
-		-stim_times 3 ${SCRIPTS}/${s}_Loc_Fp_stimtime.1D 'TENT(0, 12, 13)' -stim_label 3 Fp \
-		-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'TENT(0, 12, 13)' -stim_label 4 Hp \
-		-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'TENT(0, 12, 13)' -stim_label 5 F2 \
-		-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'TENT(0, 12, 13)' -stim_label 6 H2 \
+		-stim_times 1 ${SCRIPTS}/${s}_Loc_FH_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 1 FH \
+		-stim_times 2 ${SCRIPTS}/${s}_Loc_HF_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 2 HF \
+		-stim_times 3 ${SCRIPTS}/${s}_Loc_Fp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 3 Fp \
+		-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 Hp \
+		-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 5 F2 \
+		-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 6 H2 \
 		-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_FIR \
 		-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_FIR \
 		-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_FIR \
 		-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_FIR \
 		-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_FIR \
 		-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_FIR \
-		-gltsym 'SYM: +1*Fp -1*Hp ' -glt_label 1 F-H \
-		-gltsym 'SYM: +1*FH +1*HF -1*Fp -1*Hp ' -glt_label 2 TD-p \
-		-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
-		-gltsym 'SYM: +1*F2 +1*H2 -1*Fp -1*Hp ' -glt_label 4 2B-p \
+		-gltsym 'SYM: +1*Fp[3..7] -1*Hp[3..7] ' -glt_label 1 F-H \
+		-gltsym 'SYM: +1*FH[3..7] +1*HF[3..7] -1*Fp[3..7] -1*Hp[3..7] ' -glt_label 2 TD-p \
+		-gltsym 'SYM: +1*F2[3..7] +1*H2[3..7] -1*FH[3..7] -1*HF[3..7] ' -glt_label 3 2B-TD \
+		-gltsym 'SYM: +1*F2[3..7] +1*H2[3..7] -1*Fp[3..7] -1*Hp[3..7] ' -glt_label 4 2B-p \
 		-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
 		-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
 		-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
@@ -79,48 +79,85 @@ for s in ${SUB_ID}; do
 		-noFDR \
 		-nocout \
 		-errts ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIR_errts.nii.gz \
-		-allzero_OK	
+		-allzero_OK	-jobs 8
 	fi
 
-	#SPM basis functions
-	if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMG_errts.nii.gz ]; then
-		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | sort -V) \
-		-automask \
-		-polort A \
-		-num_stimts 6 \
-		-censor ${OutputDir}/sub-${s}/ses-Loc/FD0.2_censor.1D \
-		-ortvec ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv confounds \
-		-stim_times 1 ${SCRIPTS}/${s}_Loc_FH_stimtime.1D 'SPMG3' -stim_label 1 FH \
-		-stim_times 2 ${SCRIPTS}/${s}_Loc_HF_stimtime.1D 'SPMG3' -stim_label 2 HF \
-		-stim_times 3 ${SCRIPTS}/${s}_Loc_Fp_stimtime.1D 'SPMG3' -stim_label 3 Fp \
-		-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'SPMG3' -stim_label 4 Hp \
-		-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'SPMG3' -stim_label 5 F2 \
-		-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'SPMG3' -stim_label 6 H2 \
-		-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_SPMG \
-		-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_SPMG \
-		-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_SPMG \
-		-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_SPMG \
-		-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_SPMG \
-		-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_SPMG \
-		-gltsym 'SYM: +1*Fp -1*Hp ' -glt_label 1 F-H \
-		-gltsym 'SYM: +1*FH +1*HF -1*Fp -1*Hp ' -glt_label 2 TD-p \
-		-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
-		-gltsym 'SYM: +1*F2 +1*H2 -1*Fp -1*Hp ' -glt_label 4 2B-p \
-		-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
-		-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
-		-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
-		-gltsym 'SYM: +1*Fp ' -glt_label 8 F \
-		-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
-		-rout \
-		-tout \
-		-bucket ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMGmodel_stats \
-		-GOFORIT 100 \
-		-noFDR \
-		-nocout \
-		-errts ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMG_errts.nii.gz \
-		-allzero_OK	
-	fi
+	# #SPM basis functions
+	# if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMG_errts.nii.gz ]; then
+	# 	3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | sort -V) \
+	# 	-automask \
+	# 	-polort A \
+	# 	-num_stimts 6 \
+	# 	-censor ${OutputDir}/sub-${s}/ses-Loc/FD0.2_censor.1D \
+	# 	-ortvec ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv confounds \
+	# 	-stim_times 1 ${SCRIPTS}/${s}_Loc_FH_stimtime.1D 'SPMG3' -stim_label 1 FH \
+	# 	-stim_times 2 ${SCRIPTS}/${s}_Loc_HF_stimtime.1D 'SPMG3' -stim_label 2 HF \
+	# 	-stim_times 3 ${SCRIPTS}/${s}_Loc_Fp_stimtime.1D 'SPMG3' -stim_label 3 Fp \
+	# 	-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'SPMG3' -stim_label 4 Hp \
+	# 	-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'SPMG3' -stim_label 5 F2 \
+	# 	-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'SPMG3' -stim_label 6 H2 \
+	# 	-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_SPMG \
+	# 	-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_SPMG \
+	# 	-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_SPMG \
+	# 	-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_SPMG \
+	# 	-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_SPMG \
+	# 	-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_SPMG \
+	# 	-gltsym 'SYM: +1*Fp[2..6] -1*Hp[2..6] ' -glt_label 1 F-H \
+	# 	-gltsym 'SYM: +1*FH[2..6] +1*HF[2..6] -1*Fp[2..6] -1*Hp[2..6] ' -glt_label 2 TD-p \
+	# 	-gltsym 'SYM: +1*F2[2..6] +1*H2[2..6] -1*FH[2..6] -1*HF[2..6] ' -glt_label 3 2B-TD \
+	# 	-gltsym 'SYM: +1*F2[2..6] +1*H2[2..6] -1*Fp[2..6] -1*Hp[2..6] ' -glt_label 4 2B-p \
+	# 	-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
+	# 	-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
+	# 	-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
+	# 	-gltsym 'SYM: +1*Fp ' -glt_label 8 F \
+	# 	-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
+	# 	-rout \
+	# 	-tout \
+	# 	-bucket ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMGmodel_stats \
+	# 	-GOFORIT 100 \
+	# 	-noFDR \
+	# 	-nocout \
+	# 	-errts ${OutputDir}/sub-${s}/ses-Loc/Localizer_SPMG_errts.nii.gz \
+	# 	-allzero_OK	-jobs 8
+	# fi
 
+	# if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Localizer_CSPLIN_errts.nii.gz ]; then
+	# 	3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | sort -V) \
+	# 	-automask \
+	# 	-polort A \
+	# 	-num_stimts 6 \
+	# 	-censor ${OutputDir}/sub-${s}/ses-Loc/FD0.2_censor.1D \
+	# 	-ortvec ${OutputDir}/sub-${s}/ses-Loc/confounds.tsv confounds \
+	# 	-stim_times 1 ${SCRIPTS}/${s}_Loc_FH_stimtime.1D 'CSPLIN(0, 12, 13)' -stim_label 1 FH \
+	# 	-stim_times 2 ${SCRIPTS}/${s}_Loc_HF_stimtime.1D 'CSPLIN(0, 12, 13)' -stim_label 2 HF \
+	# 	-stim_times 3 ${SCRIPTS}/${s}_Loc_Fp_stimtime.1D 'CSPLIN(0, 12, 13)' -stim_label 3 Fp \
+	# 	-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'CSPLIN(0, 12, 13)' -stim_label 4 Hp \
+	# 	-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'CSPLIN(0, 12, 13)' -stim_label 5 F2 \
+	# 	-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'CSPLIN(0, 12, 13)' -stim_label 6 H2 \
+	# 	-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_CSPLIN \
+	# 	-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_CSPLIN \
+	# 	-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_CSPLIN \
+	# 	-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_CSPLIN \
+	# 	-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_CSPLIN \
+	# 	-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_CSPLIN \
+	# 	-gltsym 'SYM: +1*Fp[2..6] -1*Hp[2..6] ' -glt_label 1 F-H \
+	# 	-gltsym 'SYM: +1*FH[2..6] +1*HF[2..6] -1*Fp[2..6] -1*Hp[2..6] ' -glt_label 2 TD-p \
+	# 	-gltsym 'SYM: +1*F2[2..6] +1*H2[2..6] -1*FH[2..6] -1*HF[2..6] ' -glt_label 3 2B-TD \
+	# 	-gltsym 'SYM: +1*F2[2..6] +1*H2[2..6] -1*Fp[2..6] -1*Hp[2..6] ' -glt_label 4 2B-p \
+	# 	-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
+	# 	-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
+	# 	-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
+	# 	-gltsym 'SYM: +1*Fp ' -glt_label 8 F \
+	# 	-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
+	# 	-rout \
+	# 	-tout \
+	# 	-bucket ${OutputDir}/sub-${s}/ses-Loc/Localizer_CSPLINmodel_stats \
+	# 	-GOFORIT 100 \
+	# 	-noFDR \
+	# 	-nocout \
+	# 	-errts ${OutputDir}/sub-${s}/ses-Loc/Localizer_CSPLIN_errts.nii.gz \
+	# 	-allzero_OK	-jobs 8
+	# fi	
 
 	#get T1 link
 	mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${s}/mri/T1.mgz ${OutputDir}/sub-${s}/ses-Loc/Native_T1.nii.gz
@@ -151,7 +188,7 @@ for s in ${SUB_ID}; do
 
 
 	#create FFA PPA masks
-	for model in FIR SPMG; do
+	for model in FIR; do
 		3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[3]
 		3dcalc \
 		-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
@@ -160,8 +197,8 @@ for s in ${SUB_ID}; do
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
 
 		3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -quiet \
-		${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 255 | \
-		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -ijk \
+		${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
+		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz stdin
 
 		3dcalc \
@@ -171,14 +208,15 @@ for s in ${SUB_ID}; do
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
 
 		3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -quiet \
-		${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 255 | \
-		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -ijk \
+		${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
+		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -srad 8 -ijk \
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz stdin
 	
 		#create V1 mask 
 		3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz -quiet \
 		${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[1] | sort -k4 -n -r | head -n 1 | \
-		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk -prefix ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz stdin
+		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
+		-prefix ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz stdin
 	done
 
 done
