@@ -57,12 +57,12 @@ for s in ${SUB_ID}; do
 		-stim_times 4 ${SCRIPTS}/${s}_Loc_Hp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 Hp \
 		-stim_times 5 ${SCRIPTS}/${s}_Loc_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 5 F2 \
 		-stim_times 6 ${SCRIPTS}/${s}_Loc_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 6 H2 \
-		-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_FIR \
-		-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_FIR \
-		-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_FIR \
-		-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_FIR \
-		-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_FIR \
-		-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_FIR \
+		-iresp 1 ${OutputDir}/sub-${s}/ses-Loc/Localizer_FH_FIR.nii.gz \
+		-iresp 2 ${OutputDir}/sub-${s}/ses-Loc/Localizer_HF_FIR.nii.gz \
+		-iresp 3 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Fp_FIR.nii.gz \
+		-iresp 4 ${OutputDir}/sub-${s}/ses-Loc/Localizer_Hp_FIR.nii.gz \
+		-iresp 5 ${OutputDir}/sub-${s}/ses-Loc/Localizer_F2_FIR.nii.gz \
+		-iresp 6 ${OutputDir}/sub-${s}/ses-Loc/Localizer_H2_FIR.nii.gz \
 		-gltsym 'SYM: +1*Fp[3..7] -1*Hp[3..7] ' -glt_label 1 F-H \
 		-gltsym 'SYM: +1*FH[3..7] +1*HF[3..7] -1*Fp[3..7] -1*Hp[3..7] ' -glt_label 2 TD-p \
 		-gltsym 'SYM: +1*F2[3..7] +1*H2[3..7] -1*FH[3..7] -1*HF[3..7] ' -glt_label 3 2B-TD \
@@ -74,7 +74,7 @@ for s in ${SUB_ID}; do
 		-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
 		-rout \
 		-tout \
-		-bucket ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIRmodel_stats \
+		-bucket ${OutputDir}/sub-${s}/ses-Loc/Localizer_FIRmodel_stats.nii.gz \
 		-GOFORIT 100 \
 		-noFDR \
 		-nocout \
@@ -160,59 +160,68 @@ for s in ${SUB_ID}; do
 	# fi	
 
 	#get T1 link
-	mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${s}/mri/T1.mgz ${OutputDir}/sub-${s}/ses-Loc/Native_T1.nii.gz
-
+	if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Native_T1.nii.gz ]; then
+		mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${s}/mri/T1.mgz ${OutputDir}/sub-${s}/ses-Loc/Native_T1.nii.gz
+		fslreorient2std ${OutputDir}/sub-${s}/ses-Loc/Native_T1.nii.g ${OutputDir}/sub-${s}/ses-Loc/Native_T1.nii.g
+	fi	
+	
 	#Reverse normalize Group FFA PPA V1 mask
-	antsApplyTransforms --default-value 0 --float 1 \
-	--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
-	--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/FFA_LR_mask.nii.gz \
-	--interpolation NearestNeighbor \
-	--output ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeFFA.nii.gz \
-	--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
-	
-	antsApplyTransforms --default-value 0 --float 1 \
-	--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
-	--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/PPA_LR_mask.nii.gz \
-	--interpolation NearestNeighbor \
-	--output ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativePPA.nii.gz \
-	--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
-	
-	antsApplyTransforms --default-value 0 --float 1 \
-	--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
-	--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Group_V1.nii.gz \
-	--interpolation NearestNeighbor \
-	--output ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz \
-	--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
-	
+	if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz ]; then
+		antsApplyTransforms --default-value 0 --float 1 \
+		--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
+		--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Ventral_anatomical_ROI.nii.gz \
+		--interpolation NearestNeighbor \
+		--output ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+		--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
+	fi
+
+	if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz ]; then
+		antsApplyTransforms --default-value 0 --float 1 \
+		--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-Loc/func/sub-${s}_ses-Loc_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
+		--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Group_V1.nii.gz \
+		--interpolation NearestNeighbor \
+		--output ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz \
+		--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
+	fi
+
 	#--transform [/home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/func_preproc_ses_Loc_task_TDD_run_001_wf/epi_reg_wf/fsl2itk_fwd/affine.txt, 1] \
 
 
 	#create FFA PPA masks
 	for model in FIR; do
-		3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[3]
+		
+		if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig.HEAD ]; then
+			3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[3]
+		fi
+
+		rm ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
 		3dcalc \
 		-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
-		-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeFFA.nii.gz \
-		-expr 'ispositive(a*b)' -short \
+		-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+		-expr 'ispositive(a*b)*a' -short \
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
 
+		rm ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz
 		3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -quiet \
 		${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
 		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz stdin
 
+		rm ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
 		3dcalc \
 		-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
-		-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativePPA.nii.gz \
-		-expr 'isnegative(a*b)' -short \
+		-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+		-expr 'isnegative(a*b)*a*(-1)' -short \
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
 
+		rm ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz
 		3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -quiet \
 		${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
 		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -srad 8 -ijk \
 		-prefix ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz stdin
 	
 		#create V1 mask 
+		rm ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz
 		3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz -quiet \
 		${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[1] | sort -k4 -n -r | head -n 1 | \
 		3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
