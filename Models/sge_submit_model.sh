@@ -15,10 +15,7 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Models'
 submit \
 	-s ${SCRIPTS}/run_MTD_reg_model.sh \
 	-f ${SCRIPTS}/test.subjects \
-	-o ${SCRIPTS}/qsub.options.FIR_model
-
-
-
+	-o ${SCRIPTS}/qsub.options.MTD_model
 
 
 # cd ${WD}

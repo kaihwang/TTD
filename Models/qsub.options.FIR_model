@@ -1,0 +1,7 @@
+-o /home/despoB/kaihwang/tmp
+-e /home/despoB/kaihwang/tmp
+-j yes
+-m eas
+-pe threaded 8
+-l mem_free=27G
+-M kai.hwang@gmail.com
