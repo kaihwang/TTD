@@ -1,5 +1,5 @@
 #!/bin/bash
-# script to run FLOB model
+# script to run FLOB/FIR/prerpoc models to compare
 #export DISPLAY=""
 
 WD='/home/despoB/kaihwang/TRSE/TTD'

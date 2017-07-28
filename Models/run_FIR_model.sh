@@ -27,6 +27,14 @@ for s in ${SUB_ID}; do
 			fi	
 		done
 		
+
+		#get T1 link
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.gz ]; then
+			mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${s}/mri/T1.mgz ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.gz
+			fslreorient2std ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.g ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.g
+		fi	
+
+		#get native T1 mask
 		
 		#concat nuisance regressors
 		#this is the confound variables. we need the last six (13-24)
@@ -36,6 +44,7 @@ for s in ${SUB_ID}; do
 
 		echo "" > ${OutputDir}/sub-${s}/ses-${session}/confounds.tsv
 		echo "" > ${OutputDir}/sub-${s}/ses-${session}/motion.tsv
+		echo "" > ${OutputDir}/sub-${s}/ses-${session}/gsr.tsv
 		for f in $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run*confounds.tsv | sort -V); do
 			cat ${f} | tail -n+2 | cut -f13-24 >> ${OutputDir}/sub-${s}/ses-${session}/confounds.tsv
 			cat ${f} | tail -n+2 | cut -f19-24 >> ${OutputDir}/sub-${s}/ses-${session}/motion.tsv
@@ -69,14 +78,14 @@ for s in ${SUB_ID}; do
 			-iresp 5 ${OutputDir}/sub-${s}/ses-${session}/Localizer_F2_FIR.nii.gz \
 			-iresp 6 ${OutputDir}/sub-${s}/ses-${session}/Localizer_H2_FIR.nii.gz \
 			-gltsym 'SYM: +1*Fp[3..7] -1*Hp[3..7] ' -glt_label 1 F-H \
-			-gltsym 'SYM: +1*FH[3..7] +1*HF[3..7] -1*Fp[3..7] -1*Hp[3..7] ' -glt_label 2 TD-p \
-			-gltsym 'SYM: +1*F2[3..7] +1*H2[3..7] -1*FH[3..7] -1*HF[3..7] ' -glt_label 3 2B-TD \
-			-gltsym 'SYM: +1*F2[3..7] +1*H2[3..7] -1*Fp[3..7] -1*Hp[3..7] ' -glt_label 4 2B-p \
-			-gltsym 'SYM: +0.5*F2[3..7] +0.5*H2[3..7] ' -glt_label 5 2B \
-			-gltsym 'SYM: +0.5*FH[3..7] +0.5*HF[3..7] ' -glt_label 6 TD \
-			-gltsym 'SYM: +0.5*Fp[3..7] +0.5*Hp[3..7] ' -glt_label 7 p \
-			-gltsym 'SYM: +1*Fp[3..7] ' -glt_label 8 F \
-			-gltsym 'SYM: +1*Hp[3..7] ' -glt_label 9 H \
+			-gltsym 'SYM: +1*FH +1*HF -1*Fp -1*Hp ' -glt_label 2 TD-p \
+			-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
+			-gltsym 'SYM: +1*F2 +1*H2 -1*Fp -1*Hp ' -glt_label 4 2B-p \
+			-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
+			-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
+			-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
+			-gltsym 'SYM: +1*Fp ' -glt_label 8 F \
+			-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
 			-rout \
 			-tout \
 			-bucket ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIRmodel_stats.nii.gz \
@@ -86,13 +95,6 @@ for s in ${SUB_ID}; do
 			-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
 			-allzero_OK	-jobs 8
 		fi
-
-
-		#get T1 link
-		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.gz ]; then
-			mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${s}/mri/T1.mgz ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.gz
-			fslreorient2std ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.g ${OutputDir}/sub-${s}/ses-${session}/Native_T1.nii.g
-		fi	
 		
 		
 		#Reverse normalize Group FFA PPA V1 mask
@@ -125,7 +127,7 @@ for s in ${SUB_ID}; do
 		for model in FIR; do
 			
 			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig.HEAD ]; then
-				3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[3]
+				3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[3]
 			fi
 
 			rm ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
@@ -157,7 +159,7 @@ for s in ${SUB_ID}; do
 			#create V1 mask 
 			rm ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz
 			3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz -quiet \
-			${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats+orig[1] | sort -k4 -n -r | head -n 1 | \
+			${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[1] | sort -k4 -n -r | head -n 1 | \
 			3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
 			-prefix ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz stdin
 		done
