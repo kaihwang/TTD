@@ -18,7 +18,7 @@ mriqc \
     --verbose-reports \
     ${WD}/BIDS/ \
     ${WD}/QC/ \
-    participant 
+    group 
 
 END_TIME=$(date);
 echo "QC pipeline for patient $SUB_ID completed at $END_TIME";
