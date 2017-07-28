@@ -57,21 +57,20 @@ def infotodict(seqinfo):
         # t1_mprage --> T1w
         if (protocol == 't1_mprage_32ch') and (TE == 2.98):
             info[t1w] = [seq[2]]
-        
         # epi --> task    
-        # if (n_vol == 94) and (z == 40):
-        #     info[task].append({'item': seq[2]})
+        if (n_vol == 94) and (z == 40):
+            info[task].append({'item': seq[2]})
 
-        if (protocol == 'mb_bold_mb2_2.5mm_retino_100TRs') and (n_vol == 100) and ('NORM' in seq[19]):
+        if (protocol == 'mb_bold_mb2_2p5mm_AP_Retinotopy') and (n_vol == 240) and ('NORM' in seq[19]) and (total < 1128):
             info[retinotopy].append({'item': seq[2]})
         
-        if (protocol == 'mb_bold_mb2_2.5mm_retino_100TRs') and (series == 'mb_bold_mb2_2.5mm_retino_100TRs_SBRef') and ('NORM' in seq[19]):  
+        if (protocol == 'mb_bold_mb2_2p5mm_AP_Retinotopy') and (series == 'mb_bold_mb2_2p5mm_AP_Retinotopy_SBRef') and ('NORM' in seq[19]) and (total < 1128):  
             info[retinotopy_sbref].append({'item': seq[2]})
 
-        if (protocol == 'mb_bold_mb2_2p5mm_AP_ERTTD') and (n_vol == 236) and ('NORM' in seq[19]): #a hack for 7002, where forgot to switch sequence
+        if (protocol == 'mb_bold_mb2_2p5mm_AP_Retinotopy') and (n_vol == 240) and ('NORM' in seq[19]) and (total > 1127): #a hack for 7002, where forgot to switch sequence
             info[task].append({'item': seq[2]})
         
-        if (protocol == 'mb_bold_mb2_2p5mm_AP_ERTTD') and (series == 'mb_bold_mb2_2p5mm_AP_ERTTD_SBRef') and ('NORM' in seq[19]): #a hack for 7002, where forgot to switch sequence
+        if (protocol == 'mb_bold_mb2_2p5mm_AP_Retinotopy') and (series == 'mb_bold_mb2_2p5mm_AP_Retinotopy_SBRef') and ('NORM' in seq[19]) and (total > 1127): #a hack for 7002, where forgot to switch sequence
             info[task_sbref].append({'item': seq[2]})
 
 
