@@ -1,5 +1,7 @@
 import os
 
+# a specific conversion file for sub-7002
+
 def create_key(template, outtype=('nii.gz',), annotation_classes=None):
     if template is None or not template:
         raise ValueError('Template must be a valid format string')
