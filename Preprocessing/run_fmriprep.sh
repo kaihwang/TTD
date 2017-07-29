@@ -17,4 +17,4 @@ fmriprep \
     participant
 
 END_TIME=$(date);
-echo "QC pipeline for patient $SUB_ID completed at $END_TIME";
+echo "fMRIprep for $SUB_ID completed at $END_TIME";

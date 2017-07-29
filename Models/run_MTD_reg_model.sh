@@ -6,10 +6,12 @@ WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 Model='/home/despoB/kaihwang/bin/TTD/Models'
-SUB_ID="${SGE_TASK}";
+#SUB_ID="${SGE_TASK}";
 
 for s in ${SUB_ID}; do
-	for session in Loc; do  #FEF MFG S1
+	for session in ${sesssion}; do  #FEF MFG S1
+
+		echo "running MTD regression model for subject $SUB_ID, session $session"
 
 		#Create folder
 		if [ ! -d ${OutputDir}/sub-${s}/ ]; then
@@ -39,7 +41,7 @@ for s in ${SUB_ID}; do
 			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
 		fi
 		
-		for w in 5 7 9 11 13 15 17 19 21 23 25; do
+		for w in 13; do
 			
 			#create MTD and BC regressors, use ${Model}/create_MTD_regressor.py
 			# the input to that python script is n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path

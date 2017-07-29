@@ -1,7 +1,7 @@
 #!/bin/sh
 source /home/despoB/kaihwang/.bashrc;
 source activate mriqc;
-SUB_ID="${SGE_TASK}";
+SUB_ID=$(echo ${SGE_TASK} | grep -Eo "^[[:digit:]]{1,}")
 WD='/home/despoB/TRSEPPI/TTD'
 SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 
@@ -18,7 +18,7 @@ mriqc \
     --verbose-reports \
     ${WD}/BIDS/ \
     ${WD}/QC/ \
-    group 
+    participant group 
 
 END_TIME=$(date);
-echo "QC pipeline for patient $SUB_ID completed at $END_TIME";
+echo "QC pipeline for subject $SUB_ID completed at $END_TIME";

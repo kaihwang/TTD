@@ -5,13 +5,13 @@ export DISPLAY=""
 WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
-SUB_ID="${SGE_TASK}";
+#SUB_ID="${SGE_TASK}";
 
 for s in ${SUB_ID}; do
 
-	for session in Loc; do
+	for session in ${session}; do
 
-		echo "running ${SUB_ID}, session ${session}"
+		echo "running FIR localizer model for subject $SUB_ID, session $session"
 
 		
 		if [ ! -d ${OutputDir}/sub-${s}/ses-${session} ]; then
