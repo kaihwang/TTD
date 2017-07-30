@@ -8,52 +8,55 @@ OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 Model='/home/despoB/kaihwang/bin/TTD/Models'
 #SUB_ID="${SGE_TASK}";
 
+echo "running MTD regression model for subject ${SUB_ID}, session ${session}"
+
 for s in ${SUB_ID}; do
-	for session in ${sesssion}; do  #FEF MFG S1
 
-		echo "running MTD regression model for subject $SUB_ID, session $session"
+	#Create folder
+	if [ ! -d ${OutputDir}/sub-${s}/ ]; then
+		mkdir ${OutputDir}/sub-${s}/
+	fi
 
-		#Create folder
-		if [ ! -d ${OutputDir}/sub-${s}/ ]; then
-			mkdir ${OutputDir}/sub-${s}/
-		fi
+	if [ ! -d ${OutputDir}/sub-${s}/ses-${session} ]; then	
+		mkdir ${OutputDir}/sub-${s}/ses-${session}
+	fi
 
-		if [ ! -d ${OutputDir}/sub-${s}/ses-${session} ]; then	
-			mkdir ${OutputDir}/sub-${s}/ses-${session}
-		fi
-
-		#create mask
-		3dMean -count -prefix ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/*T1w_brainmask.nii.gz
-
-		#extract TS
-		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
-			3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
-			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D
-		fi
+	#create union mask
+	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ]; then
+		3dMean -count -prefix ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/*task-TDD*T1w_brainmask.nii.gz
+	fi	
+	
+	#extract TS
+	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
+		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D
+	fi
+	
+	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
+		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D
+	fi	
+	
+	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
+		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
+	fi
+	
+	for w in 13; do
 		
-		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
-			3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
-			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D
-		fi	
-		
-		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
-			3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
-			${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
-		fi
-		
-		for w in 13; do
-			
-			#create MTD and BC regressors, use ${Model}/create_MTD_regressor.py
-			# the input to that python script is n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path
-			n_runs=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | wc -l)
-			ntp_per_run=$(3dinfo ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_smoothed_preproc.nii.gz | grep -o "time steps = [[:digit:]][[:digit:]][[:digit:]] " | grep -o [[:digit:]][[:digit:]][[:digit:]])
-			window=${w} #smoothing window for MTD
-			ffa_path="${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D"
-			ppa_path="${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D"
-			v1_path="${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D"
-			echo "${n_runs} ${ntp_per_run} ${window} ${s} ${session} ${ffa_path} ${ppa_path} ${v1_path}" | python ${Model}/create_MTD_regressors.py
+		#create MTD and BC regressors, use ${Model}/create_MTD_regressor.py
+		# the input to that python script is n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path
+		n_runs=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | wc -l)
+		ntp_per_run=$(3dinfo ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_smoothed_preproc.nii.gz | grep -o "time steps = [[:digit:]][[:digit:]][[:digit:]] " | grep -o [[:digit:]][[:digit:]][[:digit:]])
+		window=${w} #smoothing window for MTD
+		ffa_path="${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D"
+		ppa_path="${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D"
+		v1_path="${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D"
+		echo "${n_runs} ${ntp_per_run} ${window} ${s} ${session} ${ffa_path} ${ppa_path} ${v1_path}" | python ${Model}/create_MTD_regressors.py
 
-			# run big model!
+		# run big model!
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
+
 			3dDeconvolve \
 			-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
 			-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
@@ -131,9 +134,10 @@ for s in ${SUB_ID}; do
 			#-fout \
 			#-rout \
 
+			#results from 3dREMLfit cannot be saved into AFNI format or header info will be lost
 			. ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}.REML_cmd
-			3dTcat -prefix ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w} ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_REML+orig[61..128]			
-		done
+			3dTcat -prefix ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w} ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_REML+orig[61..128]
+		fi		
 	done
 done
 
