@@ -174,15 +174,15 @@ if __name__ == "__main__":
 
     print ""    
     print "Correlations between timeseries:"    
-    print "    FFA, correlation between FIR and FLOBS %s" %(np.corrcoef([Seed_FFA_FIR.flatten(),Seed_FFA_FLOBS.flatten()])[0,1])
-    print "    PPA, correlation between FIR and FLOBS %s" %(np.corrcoef([Seed_PPA_FIR.flatten(),Seed_PPA_FLOBS.flatten()])[0,1])
-    print "    V1, correlation between FIR and FLOBS %s" %(np.corrcoef([Seed_VC_FIR.flatten(),Seed_VC_FLOBS.flatten()])[0,1])
-    print "    FFA, correlation between FIR and preproc %s" %(np.corrcoef([Seed_FFA_FIR.flatten(),Seed_FFA_preproc.flatten()])[0,1])
-    print "    PPA, correlation between FIR and preproc %s" %(np.corrcoef([Seed_PPA_FIR.flatten(),Seed_PPA_preproc.flatten()])[0,1])
-    print "    V1, correlation between FIR and preproc %s" %(np.corrcoef([Seed_VC_FIR.flatten(),Seed_VC_preproc.flatten()])[0,1])
-    print "    FFA, correlation between preproc and FLOBS %s" %(np.corrcoef([Seed_FFA_preproc.flatten(),Seed_FFA_FLOBS.flatten()])[0,1])
-    print "    PPA, correlation between preproc and FLOBS %s" %(np.corrcoef([Seed_PPA_preproc.flatten(),Seed_PPA_FLOBS.flatten()])[0,1])
-    print "    V1, correlation between preproc and FLOBS %s" %(np.corrcoef([Seed_VC_preproc.flatten(),Seed_VC_FLOBS.flatten()])[0,1])
+    print "    FFA, correlation between FIR and FLOBS: %s" %(np.corrcoef([Seed_FFA_FIR.flatten(),Seed_FFA_FLOBS.flatten()])[0,1])
+    print "    PPA, correlation between FIR and FLOBS: %s" %(np.corrcoef([Seed_PPA_FIR.flatten(),Seed_PPA_FLOBS.flatten()])[0,1])
+    print "    V1, correlation between FIR and FLOBS: %s" %(np.corrcoef([Seed_VC_FIR.flatten(),Seed_VC_FLOBS.flatten()])[0,1])
+    print "    FFA, correlation between FIR and preproc: %s" %(np.corrcoef([Seed_FFA_FIR.flatten(),Seed_FFA_preproc.flatten()])[0,1])
+    print "    PPA, correlation between FIR and preproc: %s" %(np.corrcoef([Seed_PPA_FIR.flatten(),Seed_PPA_preproc.flatten()])[0,1])
+    print "    V1, correlation between FIR and preproc: %s" %(np.corrcoef([Seed_VC_FIR.flatten(),Seed_VC_preproc.flatten()])[0,1])
+    print "    FFA, correlation between preproc and FLOBS: %s" %(np.corrcoef([Seed_FFA_preproc.flatten(),Seed_FFA_FLOBS.flatten()])[0,1])
+    print "    PPA, correlation between preproc and FLOBS: %s" %(np.corrcoef([Seed_PPA_preproc.flatten(),Seed_PPA_FLOBS.flatten()])[0,1])
+    print "    V1, correlation between preproc and FLOBS: %s" %(np.corrcoef([Seed_VC_preproc.flatten(),Seed_VC_FLOBS.flatten()])[0,1])
 
 
 
