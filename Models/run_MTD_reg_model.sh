@@ -27,17 +27,17 @@ for s in ${SUB_ID}; do
 	fi	
 	
 	#extract TS
-	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
+	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
 		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D
 	fi
 	
-	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
+	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
 		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D
 	fi	
 	
-	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
+	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
 		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
 	fi
@@ -46,8 +46,8 @@ for s in ${SUB_ID}; do
 		
 		#create MTD and BC regressors, use ${Model}/create_MTD_regressor.py
 		# the input to that python script is n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path
-		n_runs=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_preproc.nii.gz | wc -l)
-		ntp_per_run=$(3dinfo ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_smoothed_preproc.nii.gz | grep -o "time steps = [[:digit:]][[:digit:]][[:digit:]] " | grep -o [[:digit:]][[:digit:]][[:digit:]])
+		n_runs=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | wc -l)
+		ntp_per_run=$(3dinfo ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_smoothed_scaled_preproc.nii.gz | grep -o "time steps = [[:digit:]][[:digit:]][[:digit:]] " | grep -o [[:digit:]][[:digit:]][[:digit:]])
 		window=${w} #smoothing window for MTD
 		ffa_path="${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D"
 		ppa_path="${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D"

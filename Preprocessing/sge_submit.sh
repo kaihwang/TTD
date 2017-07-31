@@ -10,13 +10,13 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 # submit \
 # 	-s ${SCRIPTS}/run_mriqc.sh \
 # 	-f ${SCRIPTS}/test.subjects \
-# 	-o ${SCRIPTS}/qsub.options.mriqc
+# 	-o ${SCRIPTS}/qsub.options
 
 
 submit \
 	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
 	-f ${SCRIPTS}/test.subjects \
-	-o ${SCRIPTS}/qsub.options.fmriprep
+	-o ${SCRIPTS}/qsub.options
 
 
 # cd ${WD}

@@ -143,38 +143,46 @@ for s in ${SUB_ID}; do
 				3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[3]
 			fi
 
-			rm ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
-			3dcalc \
-			-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
-			-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
-			-expr 'ispositive(a*b)*a' -short \
-			-prefix ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
+			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz ]; then
+				#rm ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
+				3dcalc \
+				-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
+				-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+				-expr 'ispositive(a*b)*a' -short \
+				-prefix ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
 
-			rm ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz
-			3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -quiet \
-			${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
-			3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
-			-prefix ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz stdin
+				#rm ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz
+				3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -quiet \
+				${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
+				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
+				-prefix ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz stdin
+			fi
 
-			rm ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
-			3dcalc \
-			-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
-			-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
-			-expr 'isnegative(a*b)*a*(-1)' -short \
-			-prefix ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
+			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz ]; then
+				#rm ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
+				3dcalc \
+				-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
+				-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+				-expr 'isnegative(a*b)*a*(-1)' -short \
+				-prefix ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
 
-			rm ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz
-			3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -quiet \
-			${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
-			3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -srad 8 -ijk \
-			-prefix ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz stdin
-		
+				#rm ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz
+				3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -quiet \
+				${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
+				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -srad 8 -ijk \
+				-prefix ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz stdin
+			fi
+			
 			#create V1 mask 
-			rm ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz
-			3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz -quiet \
-			${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[1] | sort -k4 -n -r | head -n 1 | \
-			3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
-			-prefix ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz stdin
+
+			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz ]; then
+				#rm ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz
+				3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz -quiet \
+				${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[1] | sort -k4 -n -r | head -n 1 | \
+				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
+				-prefix ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz stdin
+			fi
+			
 		done
 	fi
 

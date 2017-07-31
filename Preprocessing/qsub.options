@@ -2,4 +2,6 @@
 -e /home/despoB/kaihwang/tmp
 -j yes
 -m eas
+-pe threaded 8
+-l mem_free=16G
 -M kai.hwang@gmail.com
