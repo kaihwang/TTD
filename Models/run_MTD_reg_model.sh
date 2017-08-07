@@ -130,7 +130,7 @@ for s in ${SUB_ID}; do
 			-nocout \
 			-bucket ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w} \
 			-GOFORIT 100 \
-			-noFDR -jobs 8
+			-noFDR -jobs 4
 			#-fout \
 			#-rout \
 

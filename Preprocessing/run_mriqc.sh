@@ -10,10 +10,10 @@ cd ${WD}/QC;
 mriqc \
     --participant_label $SUB_ID \
     -m T1w bold \
-    --n_procs 8 \
+    --n_procs 4 \
     --mem_gb 8 \
     --ica \
-    --ants-nthreads 3\
+    --ants-nthreads 4 \
     -w ${WD}/QC/work \
     --verbose-reports \
     ${WD}/BIDS/ \

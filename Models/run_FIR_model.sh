@@ -109,7 +109,7 @@ for s in ${SUB_ID}; do
 		-noFDR \
 		-nocout \
 		-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
-		-allzero_OK	-jobs 8
+		-allzero_OK	-jobs 4
 	fi
 	
 	#Reverse normalize Group FFA PPA V1 mask

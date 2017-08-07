@@ -4,7 +4,7 @@ WD='/home/despoB/TRSEPPI/TTD'
 
 # run heudiconv without converter
 
-for s in 7003; do
+for s in 7004; do
 
 	for ses in Loc; do
 		#first use no converter, get dicom info

@@ -20,7 +20,7 @@ if [ "${nruns}" != "${n_raw}" ]; then
 	cd ${WD}/fmriprep;
 	fmriprep \
     --participant_label $SUB_ID \
-    --nthreads 8 \
+    --nthreads 4 \
     --output-space T1w template \
     --template MNI152NLin2009cAsym \
     ${WD}/BIDS/ \
