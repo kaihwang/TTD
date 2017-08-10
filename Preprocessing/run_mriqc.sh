@@ -2,7 +2,7 @@
 source /home/despoB/kaihwang/.bashrc;
 source activate mriqc;
 SUB_ID=$(echo ${SGE_TASK} | grep -Eo "^[[:digit:]]{1,}")
-session=$(echo ${SGE_TASK} | grep -Eo "[A-Z][a-z]{1,}")
+session=$(echo ${SGE_TASK} | grep -Eo "[A-Z][a-zA-Z0-9]{1,}")
 
 WD='/home/despoB/TRSEPPI/TTD'
 SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
@@ -15,6 +15,7 @@ n_raw=$(/bin/ls ${WD}/BIDS/sub-${SUB_ID}/ses-${session}/func/*task-TDD*bold.nii.
 if [ "${nruns}" != "${n_raw}" ]; then
     mriqc \
         --participant_label $SUB_ID \
+        --session-id ${session} \
         -m T1w bold \
         --n_procs 4 \
         --mem_gb 8 \

@@ -13,10 +13,10 @@ submit \
 	-o ${SCRIPTS}/qsub.options
 
 
-submit \
-	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
-	-f ${SCRIPTS}/test.subjects \
-	-o ${SCRIPTS}/qsub.options
+# submit \
+# 	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options
 
 
 # cd ${WD}

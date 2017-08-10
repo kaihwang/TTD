@@ -4,11 +4,11 @@ WD='/home/despoB/TRSEPPI/TTD'
 
 # run heudiconv without converter
 
-for s in 7004; do
+for s in 7002 7003 7004; do
 
 	for ses in Loc S1 IPS; do
 
-		if [ -d ${WD}/Raw/{subject}_{session} ]; then
+		if [ -d ${WD}/Raw/${s}_${ses} ]; then
 			#first use no converter, get dicom info
 			heudiconv -d ${WD}/Raw/{subject}_{session}/*/*/* -s ${s} -ss ${ses} \
 			-f /home/despoB/kaihwang/bin/TTD/Preprocessing/TTD_heuristics.py -c none \

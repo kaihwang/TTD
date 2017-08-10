@@ -7,7 +7,7 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 Model='/home/despoB/kaihwang/bin/TTD/Models'
 
 SUB_ID=$(echo ${SGE_TASK} | grep -Eo "^[[:digit:]]{1,}")
-session=$(echo ${SGE_TASK} | grep -Eo "[A-Z][a-z]{1,}")
+session=$(echo ${SGE_TASK} | grep -Eo "[A-Z][a-zA-Z0-9]{1,}")
 echo "running subject $SUB_ID, session $session"
 
 

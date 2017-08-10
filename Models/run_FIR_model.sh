@@ -74,43 +74,76 @@ for s in ${SUB_ID}; do
 
 	#run localizer Model
 	#FIR model
-	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz ]; then
-		3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | sort -V) \
-		-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
-		-polort A \
-		-num_stimts 6 \
-		-censor ${OutputDir}/sub-${s}/ses-${session}/FD0.2_censor.1D \
-		-ortvec ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv confounds \
-		-stim_times 1 ${SCRIPTS}/${s}_${session}_FH_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 1 FH \
-		-stim_times 2 ${SCRIPTS}/${s}_${session}_HF_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 2 HF \
-		-stim_times 3 ${SCRIPTS}/${s}_${session}_Fp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 3 Fp \
-		-stim_times 4 ${SCRIPTS}/${s}_${session}_Hp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 Hp \
-		-stim_times 5 ${SCRIPTS}/${s}_${session}_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 5 F2 \
-		-stim_times 6 ${SCRIPTS}/${s}_${session}_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 6 H2 \
-		-iresp 1 ${OutputDir}/sub-${s}/ses-${session}/Localizer_FH_FIR.nii.gz \
-		-iresp 2 ${OutputDir}/sub-${s}/ses-${session}/Localizer_HF_FIR.nii.gz \
-		-iresp 3 ${OutputDir}/sub-${s}/ses-${session}/Localizer_Fp_FIR.nii.gz \
-		-iresp 4 ${OutputDir}/sub-${s}/ses-${session}/Localizer_Hp_FIR.nii.gz \
-		-iresp 5 ${OutputDir}/sub-${s}/ses-${session}/Localizer_F2_FIR.nii.gz \
-		-iresp 6 ${OutputDir}/sub-${s}/ses-${session}/Localizer_H2_FIR.nii.gz \
-		-gltsym 'SYM: +1*Fp[3..7] -1*Hp[3..7] ' -glt_label 1 F-H \
-		-gltsym 'SYM: +1*FH +1*HF -1*Fp -1*Hp ' -glt_label 2 TD-p \
-		-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
-		-gltsym 'SYM: +1*F2 +1*H2 -1*Fp -1*Hp ' -glt_label 4 2B-p \
-		-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
-		-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
-		-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
-		-gltsym 'SYM: +1*Fp ' -glt_label 8 F \
-		-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
-		-rout \
-		-tout \
-		-bucket ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIRmodel_stats.nii.gz \
-		-GOFORIT 100 \
-		-noFDR \
-		-nocout \
-		-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
-		-allzero_OK	-jobs 4
+	if [ ${session} = Loc ]; then
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz ]; then
+			3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | sort -V) \
+			-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
+			-polort A \
+			-num_stimts 6 \
+			-censor ${OutputDir}/sub-${s}/ses-${session}/FD0.2_censor.1D \
+			-ortvec ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv confounds \
+			-stim_times 1 ${SCRIPTS}/${s}_${session}_FH_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 1 FH \
+			-stim_times 2 ${SCRIPTS}/${s}_${session}_HF_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 2 HF \
+			-stim_times 3 ${SCRIPTS}/${s}_${session}_Fp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 3 Fp \
+			-stim_times 4 ${SCRIPTS}/${s}_${session}_Hp_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 Hp \
+			-stim_times 5 ${SCRIPTS}/${s}_${session}_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 5 F2 \
+			-stim_times 6 ${SCRIPTS}/${s}_${session}_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 6 H2 \
+			-iresp 1 ${OutputDir}/sub-${s}/ses-${session}/Localizer_FH_FIR.nii.gz \
+			-iresp 2 ${OutputDir}/sub-${s}/ses-${session}/Localizer_HF_FIR.nii.gz \
+			-iresp 3 ${OutputDir}/sub-${s}/ses-${session}/Localizer_Fp_FIR.nii.gz \
+			-iresp 4 ${OutputDir}/sub-${s}/ses-${session}/Localizer_Hp_FIR.nii.gz \
+			-iresp 5 ${OutputDir}/sub-${s}/ses-${session}/Localizer_F2_FIR.nii.gz \
+			-iresp 6 ${OutputDir}/sub-${s}/ses-${session}/Localizer_H2_FIR.nii.gz \
+			-gltsym 'SYM: +1*Fp[3..7] -1*Hp[3..7] ' -glt_label 1 F-H \
+			-gltsym 'SYM: +1*FH +1*HF -1*Fp -1*Hp ' -glt_label 2 TD-p \
+			-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
+			-gltsym 'SYM: +1*F2 +1*H2 -1*Fp -1*Hp ' -glt_label 4 2B-p \
+			-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
+			-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
+			-gltsym 'SYM: +0.5*Fp +0.5*Hp ' -glt_label 7 p \
+			-gltsym 'SYM: +1*Fp ' -glt_label 8 F \
+			-gltsym 'SYM: +1*Hp ' -glt_label 9 H \
+			-rout \
+			-tout \
+			-bucket ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIRmodel_stats.nii.gz \
+			-GOFORIT 100 \
+			-noFDR \
+			-nocout \
+			-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
+			-allzero_OK	-jobs 4
+		fi
 	fi
+
+	if [ ${session} != Loc ]; then
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz ]; then
+			3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | sort -V) \
+			-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
+			-polort A \
+			-num_stimts 4 \
+			-censor ${OutputDir}/sub-${s}/ses-${session}/FD0.2_censor.1D \
+			-ortvec ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv confounds \
+			-stim_times 1 ${SCRIPTS}/${s}_${session}_FH_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 1 FH \
+			-stim_times 2 ${SCRIPTS}/${s}_${session}_HF_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 2 HF \
+			-stim_times 3 ${SCRIPTS}/${s}_${session}_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 3 F2 \
+			-stim_times 4 ${SCRIPTS}/${s}_${session}_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 H2 \
+			-iresp 1 ${OutputDir}/sub-${s}/ses-${session}/Localizer_FH_FIR.nii.gz \
+			-iresp 2 ${OutputDir}/sub-${s}/ses-${session}/Localizer_HF_FIR.nii.gz \
+			-iresp 3 ${OutputDir}/sub-${s}/ses-${session}/Localizer_F2_FIR.nii.gz \
+			-iresp 4 ${OutputDir}/sub-${s}/ses-${session}/Localizer_H2_FIR.nii.gz \
+			-gltsym 'SYM: +1*F2 +1*H2 -1*FH -1*HF ' -glt_label 3 2B-TD \
+			-gltsym 'SYM: +0.5*F2 +0.5*H2 ' -glt_label 5 2B \
+			-gltsym 'SYM: +0.5*FH +0.5*HF ' -glt_label 6 TD \
+			-rout \
+			-tout \
+			-bucket ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIRmodel_stats.nii.gz \
+			-GOFORIT 100 \
+			-noFDR \
+			-nocout \
+			-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
+			-allzero_OK	-jobs 4
+		fi
+	fi
+
 	
 	#Reverse normalize Group FFA PPA V1 mask
 	if [ $session = Loc ]; then

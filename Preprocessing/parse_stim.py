@@ -38,6 +38,7 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 	'''
 	
 	num_runs = int(num_runs)
+	
 	#fix issue with inconsistent naming
 	if ROI == 'F':
 		site = 'FEF'
@@ -47,6 +48,8 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 		site = 'S1'		
 	if ROI == 'Loc':
 		site = 'Loc'	
+	if ROI == 'S1':
+		site = 'S1'
 
 	print "parsing stimulus timing for subject %s, session %s" %(s, ROI)	
 
