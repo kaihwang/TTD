@@ -6,7 +6,7 @@ WD='/home/despoB/TRSEPPI/TTD'
 
 for s in 7002 7003 7004; do
 
-	for ses in Loc S1 IPS; do
+	for ses in Loc S1 Ips; do
 
 		if [ -d ${WD}/Raw/${s}_${ses} ]; then
 			#first use no converter, get dicom info

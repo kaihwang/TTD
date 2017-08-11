@@ -53,6 +53,7 @@ for s in ${SUB_ID}; do
 	fi
 
 	#create censor
+	nruns=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${SUB_ID}/ses-${session}/func/*task-TDD*T1w_preproc.nii.gz | wc -l)
 	1d_tool.py -infile ${OutputDir}/sub-${s}/ses-${session}/motion.tsv \
 	-set_nruns ${nruns} -show_censor_count -censor_motion 0.2 ${OutputDir}/sub-${s}/ses-${session}/FD0.2 -censor_prev_TR -overwrite
 

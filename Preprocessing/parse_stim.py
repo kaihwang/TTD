@@ -50,7 +50,9 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 		site = 'Loc'	
 	if ROI == 'S1':
 		site = 'S1'
-
+	if ROI == 'Ips':
+		site = 'Ips'
+			
 	print "parsing stimulus timing for subject %s, session %s" %(s, ROI)	
 
 	filestring = '/home/despoB/kaihwang/TRSE/TTD/ScanLogs/fMRI_Data_%s_%s_ses*.txt' %(s, ROI)
