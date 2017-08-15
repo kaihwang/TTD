@@ -52,11 +52,6 @@ for s in ${SUB_ID}; do
 		3dMean -count -prefix ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/*task-TDD*T1w_brainmask.nii.gz
 	fi
 
-	#create censor
-	nruns=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${SUB_ID}/ses-${session}/func/*task-TDD*T1w_preproc.nii.gz | wc -l)
-	1d_tool.py -infile ${OutputDir}/sub-${s}/ses-${session}/motion.tsv \
-	-set_nruns ${nruns} -show_censor_count -censor_motion 0.2 ${OutputDir}/sub-${s}/ses-${session}/FD0.2 -censor_prev_TR -overwrite
-
 	#concat nuisance regressors
 	#this is the confound variables. we need the last six (13-24)
 	# WhiteMatter	GlobalSignal	stdDVARS	non-stdDVARS	vx-wisestdDVARS	FramewiseDisplacement	
@@ -70,6 +65,12 @@ for s in ${SUB_ID}; do
 		cat ${f} | tail -n+2 | cut -f19-24 >> ${OutputDir}/sub-${s}/ses-${session}/motion.tsv
 		cat ${f} | tail -n+2 | cut -f1 >> ${OutputDir}/sub-${s}/ses-${session}/gsr.tsv
 	done
+
+	#create censor
+	nruns=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${SUB_ID}/ses-${session}/func/*task-TDD*T1w_preproc.nii.gz | wc -l)
+	1d_tool.py -infile ${OutputDir}/sub-${s}/ses-${session}/motion.tsv \
+	-set_nruns ${nruns} -show_censor_count -censor_motion 0.2 ${OutputDir}/sub-${s}/ses-${session}/FD0.2 -censor_prev_TR -overwrite
+
 	#FD0.2_enorm.1D is AFNI's FD
 	1dcat ${OutputDir}/sub-${s}/ses-${session}/confounds.tsv ${OutputDir}/sub-${s}/ses-${session}/FD0.2_enorm.1D ${OutputDir}/sub-${s}/ses-${session}/gsr.tsv > ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv
 
