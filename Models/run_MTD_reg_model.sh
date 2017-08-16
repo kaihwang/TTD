@@ -197,7 +197,7 @@ for s in ${SUB_ID}; do
 
 				#results from 3dREMLfit cannot be saved into AFNI format or header info will be lost
 				. ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}.REML_cmd
-				3dTcat -prefix ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w} ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_REML+orig
+				3dTcat -prefix ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w} ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_REML+orig[1..78]
 			fi	
 		fi
 	done
