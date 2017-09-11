@@ -34,6 +34,7 @@ fi
 ##parse stimulus timing
 #change back to default env
 source activate root 
+nruns=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${SUB_ID}/ses-${session}/func/*task-TDD*T1w_preproc.nii.gz | wc -l)
 echo "${SUB_ID} ${session} ${nruns}" | python ${SCRIPTS}/parse_stim.py
 
 
