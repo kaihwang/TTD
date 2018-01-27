@@ -74,6 +74,15 @@ for s in ${SUB_ID}; do
 	#FD0.2_enorm.1D is AFNI's FD
 	1dcat ${OutputDir}/sub-${s}/ses-${session}/confounds.tsv ${OutputDir}/sub-${s}/ses-${session}/FD0.2_enorm.1D ${OutputDir}/sub-${s}/ses-${session}/gsr.tsv > ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv
 
+	# in case 1d_tool fails, couldn't figure out why yet
+	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/FD0.2_enorm.1D ]; then
+		1dcat ${OutputDir}/sub-${s}/ses-${session}/confounds.tsv ${OutputDir}/sub-${s}/ses-${session}/gsr.tsv > ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv
+	fi
+	
+	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/FD0.2_censor.1D ]; then
+		yes "1"| head -n $((${nruns}*236)) > ${OutputDir}/sub-${s}/ses-${session}/FD0.2_censor.1D
+	fi
+		
 	#run localizer Model
 	#FIR model
 	if [ ${session} = Loc ]; then

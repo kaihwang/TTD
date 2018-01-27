@@ -74,14 +74,14 @@ if __name__ == "__main__":
 
 
 	TS_FFA = np.loadtxt(ffa_path) #np.random.randn(n_runs * ntp_per_run)
-	TS_PPA = np.loadtxt(ppa_path)#np.random.randn(n_runs * ntp_per_run)
-	TS_V1 = np.loadtxt(v1_path)#np.random.randn(n_runs * ntp_per_run)
+	TS_PPA = np.loadtxt(ppa_path) #np.random.randn(n_runs * ntp_per_run)
+	TS_V1 = np.loadtxt(v1_path) #np.random.randn(n_runs * ntp_per_run)
 
 	#reshape the TS into run x timepoints
 	#to test the reshape works correctly np.arange(0,2400).reshape((12,200))
 	TS_FFA_runs = np.reshape(TS_FFA, (n_runs, ntp_per_run))
 	TS_PPA_runs = np.reshape(TS_PPA, (n_runs, ntp_per_run))
-	TS_V1_runs = np.reshape(TS_V1, (n_runs, ntp_per_run))
+	TS_V1_runs = np.reshape(TS_V1, (n_runs, ntp_per_run))	
 
 	#gen MTD and BC regressors based on the sequence of design
 	fn = scanlog_path + "%s_%s_run_order" %(subject, ses)
