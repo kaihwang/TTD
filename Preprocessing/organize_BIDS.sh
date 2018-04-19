@@ -4,9 +4,9 @@ WD='/home/despoB/TRSEPPI/TTD'
 
 # run heudiconv without converter
 
-for s in 7011; do
+for s in 7019; do
 
-	for ses in Loc S1 Ips; do
+	for ses in Loc S1 Ips Ret; do
 
 		if [ -d ${WD}/Raw/${s}_${ses} ]; then
 			#first use no converter, get dicom info

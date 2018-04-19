@@ -7,6 +7,8 @@ SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 Model='/home/despoB/kaihwang/bin/TTD/Models'
 #SUB_ID="${SGE_TASK}";
+#SUB_ID=7014
+#session=Loc
 
 echo "running MTD regression model for subject ${SUB_ID}, session ${session}"
 
@@ -57,6 +59,10 @@ for s in ${SUB_ID}; do
 
 		# run big model!
 		if [ ${session} = Loc ]; then
+
+			rm ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}*
+			rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
+
 			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
 				3dDeconvolve \
 				-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
@@ -142,6 +148,10 @@ for s in ${SUB_ID}; do
 		fi	
 
 		if [ ${session} != Loc ]; then
+
+			rm ${OutputDir}/sub-${s}/ses-${session}/GLTresults*
+			rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
+
 			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
 				3dDeconvolve \
 				-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \

@@ -6,6 +6,8 @@ WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 #SUB_ID="${SGE_TASK}";
+#SUB_ID=7014
+#session=Loc
 
 for s in ${SUB_ID}; do
 
@@ -166,6 +168,24 @@ for s in ${SUB_ID}; do
 			--output ${OutputDir}/sub-${s}/ses-${session}/Group_to_native_ventral_Anatomicals.nii.gz \
 			--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
 		fi
+
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Group_to_native_FFA.nii.gz ]; then
+			antsApplyTransforms --default-value 0 --float 1 \
+			--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
+			--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Group_FFA_mask.nii.gz \
+			--interpolation NearestNeighbor \
+			--output ${OutputDir}/sub-${s}/ses-${session}/Group_to_native_FFA.nii.gz \
+			--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
+		fi
+
+		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Group_to_native_PPA.nii.gz ]; then
+			antsApplyTransforms --default-value 0 --float 1 \
+			--reference-image ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-001_bold_space-T1w_brainmask.nii.gz \
+			--input /home/despoB/kaihwang/TRSE/TDSigEI/ROIs/Group_PPA_mask.nii.gz \
+			--interpolation NearestNeighbor \
+			--output ${OutputDir}/sub-${s}/ses-${session}/Group_to_native_PPA.nii.gz \
+			--transform /home/despoB/TRSEPPI/TTD/fmriprep/work/fmriprep_wf/single_subject_${s}_wf/anat_preproc_wf/t1_2_mni/ants_t1_to_mniInverseComposite.h5
+		fi
 	fi
 	
 	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Group_to_nativeV1.nii.gz ]; then
@@ -183,37 +203,43 @@ for s in ${SUB_ID}; do
 	if [ $session = Loc ]; then
 		for model in FIR; do
 			
+			rm ${OutputDir}/sub-${s}/ses-${session}/*FFA*
+			rm ${OutputDir}/sub-${s}/ses-${session}/*PPA*
+			rm ${OutputDir}/sub-${s}/ses-${session}/*V1*
+
 			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig.HEAD ]; then
 				3dTcat -prefix ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat ${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[3]
 			fi
 
 			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz ]; then
 				#rm ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
+				#Group_to_native_ventral_Anatomicals.nii.gz \
 				3dcalc \
 				-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
-				-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+				-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_FFA.nii.gz \
 				-expr 'ispositive(a*b)*a' -short \
 				-prefix ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz
 
 				#rm ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz
 				3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -quiet \
-				${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
-				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
+				${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz | sort -k4 -n -r | head -n 128 | \
+				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -ijk \
 				-prefix ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROI${model}.nii.gz stdin
 			fi
 
 			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz ]; then
 				#rm ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
+				#Group_to_native_ventral_Anatomicals.nii.gz \
 				3dcalc \
 				-a ${OutputDir}/sub-${s}/ses-Loc/face_v_house_${model}tstat+orig \
-				-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_ventral_Anatomicals.nii.gz \
+				-b ${OutputDir}/sub-${s}/ses-Loc/Group_to_native_PPA.nii.gz \
 				-expr 'isnegative(a*b)*a*(-1)' -short \
 				-prefix ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz
 
 				#rm ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz
 				3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -quiet \
-				${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 1 | \
-				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -srad 8 -ijk \
+				${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz | sort -k4 -n -r | head -n 128 | \
+				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/PPAmasked${model}.nii.gz -ijk \
 				-prefix ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROI${model}.nii.gz stdin
 			fi
 			
@@ -222,8 +248,8 @@ for s in ${SUB_ID}; do
 			if [ ! -e ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz ]; then
 				#rm ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz
 				3dmaskdump -mask ${OutputDir}/sub-${s}/ses-Loc/Group_to_nativeV1.nii.gz -quiet \
-				${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[1] | sort -k4 -n -r | head -n 1 | \
-				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -srad 8 -ijk \
+				${OutputDir}/sub-${s}/ses-Loc/Localizer_${model}model_stats.nii.gz[1] | sort -k4 -n -r | head -n 128 | \
+				3dUndump -master ${OutputDir}/sub-${s}/ses-Loc/FFAmasked${model}.nii.gz -ijk \
 				-prefix ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROI${model}.nii.gz stdin
 			fi
 			
