@@ -24,25 +24,25 @@ for s in ${SUB_ID}; do
 	fi
 
 	#create union mask
-	if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ]; then
-		3dMean -count -prefix ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/*task-TDD*T1w_brainmask.nii.gz
-	fi	
+	#if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ]; then
+	3dMean -count -prefix ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/*task-TDD*T1w_brainmask.nii.gz
+	#fi	
 	
 	#extract TS
-	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
-		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
+	#if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D ]; then
+	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ts.1D
-	fi
+	#fi
 	
-	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
-		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
+	#if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D ]; then
+	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ts.1D
-	fi	
+	#fi	
 	
-	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
-		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
+	#if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D ]; then
+	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
-	fi
+	#fi
 	
 	for w in 13; do
 		

@@ -20,20 +20,20 @@ echo "running subject $SUB_ID, session $session"
 #nruns=$(/bin/ls ${WD}/fmriprep/fmriprep/sub-${SUB_ID}/ses-${session}/func/*task-TDD*T1w_preproc.nii.gz | wc -l)
 #n_raw=$(/bin/ls ${WD}/BIDS/sub-${SUB_ID}/ses-${session}/func/*task-TDD*bold.nii.gz | wc -l)
 #if [ "${nruns}" != "${n_raw}" ]; then
-source activate fmriprep;
-cd ${WD}/fmriprep;
-fmriprep \
---participant_label $SUB_ID \
---nthreads 4 \
---output-space T1w template \
---template MNI152NLin2009cAsym \
-${WD}/BIDS/ \
-${WD}/fmriprep/ \
-participant
+# source activate fmriprep;
+# cd ${WD}/fmriprep;
+# fmriprep \
+# --participant_label $SUB_ID \
+# --nthreads 4 \
+# --output-space T1w template \
+# --template MNI152NLin2009cAsym \
+# ${WD}/BIDS/ \
+# ${WD}/fmriprep/ \
+# participant
 
-END_TIME=$(date);
-echo "fmriprep for subject $SUB_ID completed at $END_TIME"
-#fi
+# END_TIME=$(date);
+# echo "fmriprep for subject $SUB_ID completed at $END_TIME"
+# #fi
 
 ##parse stimulus timing
 #change back to default env
@@ -43,7 +43,7 @@ echo "${SUB_ID} ${session} ${nruns}" | python ${SCRIPTS}/parse_stim.py
 
 
 ##FIR model for localizing
-. ${Model}/run_FIR_model.sh
+#. ${Model}/run_FIR_model.sh
 
 
 ##MTD model
@@ -51,15 +51,15 @@ echo "${SUB_ID} ${session} ${nruns}" | python ${SCRIPTS}/parse_stim.py
 
 
 ##Retinotopy
-if [ ${session} = Loc ]; then
-	#create	SUMA surfaces
-	if [ ! -d ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/SUMA ]; then
-		cd ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/
-		@SUMA_Make_Spec_FS -sid sub-${SUB_ID}
-	fi
+# if [ ${session} = Loc ]; then
+# 	#create	SUMA surfaces
+# 	if [ ! -d ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/SUMA ]; then
+# 		cd ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/
+# 		@SUMA_Make_Spec_FS -sid sub-${SUB_ID}
+# 	fi
 
-	if [ ! -d ${WD}/Results/sub-${SUB_ID}/ses-Loc/${SUB_ID}_meridian.results ]; then
-		. ${Model}/run_meridian_mapping.sh
-	fi
-fi
+# 	if [ ! -d ${WD}/Results/sub-${SUB_ID}/ses-Loc/${SUB_ID}_meridian.results ]; then
+# 		. ${Model}/run_meridian_mapping.sh
+# 	fi
+# fi
 
