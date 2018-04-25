@@ -60,8 +60,8 @@ for s in ${SUB_ID}; do
 		# run big model!
 		if [ ${session} = Loc ]; then
 
-			rm ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}*
-			rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
+			#rm ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}*
+			#rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
 
 			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
 				3dDeconvolve \
@@ -149,8 +149,8 @@ for s in ${SUB_ID}; do
 
 		if [ ${session} != Loc ]; then
 
-			rm ${OutputDir}/sub-${s}/ses-${session}/GLTresults*
-			rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
+			#rm ${OutputDir}/sub-${s}/ses-${session}/GLTresults*
+			#rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
 
 			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
 				3dDeconvolve \
