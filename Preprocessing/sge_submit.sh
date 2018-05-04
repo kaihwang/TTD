@@ -7,21 +7,21 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 
 #run_mriqc.sh or run_fmriprep.sh
 
-# submit \
-# 	-s ${SCRIPTS}/run_mriqc.sh \
-# 	-f ${SCRIPTS}/test.subjects \
-# 	-o ${SCRIPTS}/qsub.options
+submit \
+	-s ${SCRIPTS}/run_mriqc.sh \
+	-f ${SCRIPTS}/test.subjects \
+	-o ${SCRIPTS}/qsub.options
 
-
-# submit \
-#  	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
-#  	-f ${SCRIPTS}/test.subjects \
-#  	-o ${SCRIPTS}/qsub.options
 
 submit \
- 	-s ${SCRIPTS}/rerun_MTD.sh \
+ 	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
  	-f ${SCRIPTS}/test.subjects \
  	-o ${SCRIPTS}/qsub.options
+
+# submit \
+# 	-s ${SCRIPTS}/rerun_MTD.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options
 
 
 
@@ -42,5 +42,12 @@ submit \
 # 	 	qsub -V -M kaihwang -m e -e ~/tmp -o ~/tmp /home/despoB/kaihwang/tmp/proc_func_${Subject}_${r}.sh    #
 # 	# 	#fi
 # 	done
+
+# done
+
+
+# for Subject in 7003 7004 7006 7008 7009 7012 7014 7017 7016 7018 7019; do
+# 	sed "s/s in 7003/s in ${Subject}/g" < ${SCRIPTS}/flatsurf.sh > /home/despoB/kaihwang/tmp/fs${Subject}.sh 
+# 	qsub -V -M kaihwang -m e -e ~/tmp -o ~/tmp /home/despoB/kaihwang/tmp/fs${Subject}.sh
 
 # done

@@ -2,6 +2,7 @@
 source /home/despoB/kaihwang/.bashrc;
 source activate fmriprep;
 SUB_ID="${SGE_TASK}";
+#SUB_ID=7009
 WD='/home/despoB/TRSEPPI/TTD'
 SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 
@@ -12,7 +13,6 @@ fmriprep \
     --nthreads 4 \
     --output-space T1w template \
     --template MNI152NLin2009cAsym \
-    --write-graph \
     ${WD}/BIDS/ \
     ${WD}/fmriprep/ \
     participant
