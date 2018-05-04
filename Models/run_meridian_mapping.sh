@@ -3,19 +3,20 @@
 
 WD='/home/despoB/kaihwang/TRSE/TTD'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
-
-for subject in ${SUB_ID}; do
+#SUB_ID=7018
+ses=Ret
+for subject in 7019; do
 
 	#convert freesurfer skullstrip brain as underlay
-	mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${subject}/mri/brain.mgz ${OutputDir}/sub-${subject}/ses-Loc/brain.nii.gz
-	fslreorient2std ${OutputDir}/sub-${subject}/ses-Loc/brain.nii.gz ${OutputDir}/sub-${subject}/ses-Loc/brain.nii.gz
+	mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${subject}/mri/brain.mgz ${OutputDir}/sub-${subject}/ses-${ses}/brain.nii.gz
+	fslreorient2std ${OutputDir}/sub-${subject}/ses-${ses}/brain.nii.gz ${OutputDir}/sub-${subject}/ses-${ses}/brain.nii.gz
 
-	cd ${OutputDir}/sub-${subject}/ses-Loc/
+	cd ${OutputDir}/sub-${subject}/ses-${ses}/
 	afni_proc.py -subj_id ${subject}_meridian \
 	-blocks surf blur scale regress \
-	-copy_anat ${OutputDir}/sub-${subject}/ses-Loc/brain.nii.gz \
+	-copy_anat ${OutputDir}/sub-${subject}/ses-${ses}/brain.nii.gz \
 	-anat_has_skull no \
-	-dsets ${WD}/fmriprep/fmriprep/sub-${subject}/ses-Loc/func/*Retinotopy*space-T1w_preproc.nii.gz \
+	-dsets ${WD}/fmriprep/fmriprep/sub-${subject}/ses-${ses}/func/*Retinotopy*space-T1w_preproc.nii.gz \
 	-surf_anat ${WD}/fmriprep/freesurfer/sub-${subject}/SUMA/sub-${subject}_SurfVol+orig \
 	-surf_spec ${WD}/fmriprep/freesurfer/sub-${subject}/SUMA/sub-${subject}_?h.spec \
 	-blur_size 6 \

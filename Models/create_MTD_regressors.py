@@ -61,7 +61,7 @@ def get_MTD(input1, input2, window):
 #input
 if __name__ == "__main__":
 
-	n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path = raw_input().split()
+	n_runs, ntp_per_run, window, subject, ses, ffa_path, ppa_path, v1_path, VC = raw_input().split()
 	n_runs = int(n_runs)
 	ntp_per_run = int(ntp_per_run)
 	window = int(window) #simulation from MAC
@@ -105,15 +105,15 @@ if __name__ == "__main__":
 			Seed_VC[r,:] = TS_V1_runs[r,:]
 
 
-		fn = output_path + '%s_%s_%s_MTD_FFA-VC.1D'	%(subject,ses, condition)
+		fn = output_path + '%s_%s_%s_MTD_FFA-%s.1D'	%(subject,ses, condition, VC)
 		np.savetxt(fn, MTD_FFA.flatten())
-		fn = output_path +  '%s_%s_%s_MTD_PPA-VC.1D'	%(subject,ses, condition)
+		fn = output_path +  '%s_%s_%s_MTD_PPA-%s.1D'	%(subject,ses, condition, VC)
 		np.savetxt(fn, MTD_PPA.flatten())
 		fn = output_path +  '%s_%s_%s_BC_FFA.1D'	%(subject,ses, condition)
 		np.savetxt(fn, Seed_FFA.flatten())
 		fn = output_path +  '%s_%s_%s_BC_PPA.1D'	%(subject,ses, condition)
 		np.savetxt(fn, Seed_PPA.flatten())
-		fn = output_path + '%s_%s_%s_BC_VC.1D'	%(subject,ses, condition)
+		fn = output_path + '%s_%s_%s_BC_%s.1D'	%(subject,ses, condition, VC)
 		np.savetxt(fn, Seed_VC.flatten())
 
 
