@@ -261,12 +261,12 @@ for s in ${SUB_ID}; do
 					-stim_file 22 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_PPA.1D -stim_label 22 BC_F2_PPA \
 					-stim_file 23 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_FFA.1D -stim_label 23 BC_H2_FFA \
 					-stim_file 24 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_PPA.1D -stim_label 24 BC_H2_PPA \
-					-stim_file 25 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_VC.1D -stim_label 25 BC_FH_VC \
-					-stim_file 26 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_VC.1D -stim_label 26 BC_HF_VC \
-					-stim_file 27 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_BC_VC.1D -stim_label 27 BC_Fp_VC \
-					-stim_file 28 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_BC_VC.1D -stim_label 28 BC_Hp_VC \
-					-stim_file 29 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_VC.1D -stim_label 29 BC_H2_VC \
-					-stim_file 30 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_VC.1D -stim_label 30 BC_F2_VC \
+					-stim_file 25 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_${ROI}.1D -stim_label 25 BC_FH_${ROI} \
+					-stim_file 26 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_${ROI}.1D -stim_label 26 BC_HF_${ROI} \
+					-stim_file 27 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_BC_${ROI}.1D -stim_label 27 BC_Fp_${ROI} \
+					-stim_file 28 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Hp_BC_${ROI}.1D -stim_label 28 BC_Hp_${ROI} \
+					-stim_file 29 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_${ROI}.1D -stim_label 29 BC_H2_${ROI} \
+					-stim_file 30 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_${ROI}.1D -stim_label 30 BC_F2_${ROI} \
 					-num_glt 34 \
 					-gltsym 'SYM: +0.5*MTD_FH_FFA-VC +0.5*MTD_HF_PPA-VC' -glt_label 1 MTD_Target_1bk \
 					-gltsym 'SYM: +0.5*MTD_HF_FFA-VC +0.5*MTD_FH_PPA-VC' -glt_label 2 MTD_Distractor_1bk \
