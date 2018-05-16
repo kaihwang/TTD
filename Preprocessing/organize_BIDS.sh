@@ -4,7 +4,7 @@ WD='/home/despoB/TRSEPPI/TTD'
 
 # run heudiconv without converter
 
-for s in 7019; do
+for s in 7018 7019; do
 
 	for ses in Loc S1 Ips Ret; do
 
