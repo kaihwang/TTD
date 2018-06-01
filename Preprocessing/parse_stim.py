@@ -105,6 +105,8 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 	Hp_stimtime = [['*']*num_runs]
 	F2_stimtime = [['*']*num_runs]
 	H2_stimtime = [['*']*num_runs]
+	Fo_stimtime = [['*']*num_runs]
+	Ho_stimtime = [['*']*num_runs]
 
 	for i, run in enumerate(np.arange(1,num_runs+1)):  #loop through 12 runs
 		run_df = df[df['Run']==run].reset_index() #"view" of block we are curreint sorting through
@@ -114,6 +116,8 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 		Fp_run_trials = []
 		H2_run_trials = []
 		F2_run_trials = []
+		Ho_run_trials = []
+		Fo_run_trials = []
 
 		for tr in np.arange(0,ntrials_per_run):  #this is to loop through trials
 			if run_df.loc[tr,'Condition'] in ('FH'):
@@ -132,7 +136,12 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 				F2_run_trials.append(run_df.loc[tr,'OnsetTime']) 
 
 			if run_df.loc[tr,'Condition'] in ('H2'):
-				H2_run_trials.append(run_df.loc[tr,'OnsetTime']) 				
+				H2_run_trials.append(run_df.loc[tr,'OnsetTime']) 
+			if run_df.loc[tr,'Condition'] in ('Fo'):
+				Fo_run_trials.append(run_df.loc[tr,'OnsetTime']) 
+
+			if run_df.loc[tr,'Condition'] in ('Ho'):
+				Ho_run_trials.append(run_df.loc[tr,'OnsetTime']) 					
 
 		if any(FH_run_trials):
 			FH_stimtime[0][i] = FH_run_trials	#put trial timing of each block into the stimtime array	
@@ -145,7 +154,11 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 		if any(F2_run_trials):
 			F2_stimtime[0][i] = F2_run_trials				
 		if any(H2_run_trials):
-			H2_stimtime[0][i] = H2_run_trials	
+			H2_stimtime[0][i] = H2_run_trials
+		if any(Fo_run_trials):
+			Fo_stimtime[0][i] = Fo_run_trials				
+		if any(Ho_run_trials):
+			Ho_stimtime[0][i] = Ho_run_trials		
 
 
 	#write out stimtime array to text file. 		
@@ -166,6 +179,12 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 
 	fn = '/home/despoB/TRSEPPI/TTD/ScanLogs/%s_%s_H2_stimtime.1D' %(s, site)
 	write_stimtime(fn, H2_stimtime)					
+
+	fn = '/home/despoB/TRSEPPI/TTD/ScanLogs/%s_%s_Fo_stimtime.1D' %(s, site)
+	write_stimtime(fn, Fo_stimtime)	
+
+	fn = '/home/despoB/TRSEPPI/TTD/ScanLogs/%s_%s_Ho_stimtime.1D' %(s, site)
+	write_stimtime(fn, Ho_stimtime)	
 
 if __name__ == "__main__":
 
