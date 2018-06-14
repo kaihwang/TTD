@@ -137,6 +137,7 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 
 			if run_df.loc[tr,'Condition'] in ('H2'):
 				H2_run_trials.append(run_df.loc[tr,'OnsetTime']) 
+				
 			if run_df.loc[tr,'Condition'] in ('Fo'):
 				Fo_run_trials.append(run_df.loc[tr,'OnsetTime']) 
 

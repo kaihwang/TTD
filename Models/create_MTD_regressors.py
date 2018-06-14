@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	subject = int(subject)
 	#ses ='Loc'
 
-	conditions = ['Fp', 'Hp', 'FH', 'HF', 'F2', 'H2']
+	conditions = ['Fp', 'Hp', 'FH', 'HF', 'F2', 'H2', 'Fo', 'Ho']
 	scanlog_path = '/home/despoB/TRSEPPI/TTD/ScanLogs/'
 	output_path = '/home/despoB/TRSEPPI/TTD/Results/sub-%s/ses-%s/' %(subject, ses)
 
