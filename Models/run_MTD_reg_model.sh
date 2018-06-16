@@ -6,7 +6,7 @@ WD='/home/despoB/kaihwang/TRSE/TTD'
 SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 Model='/home/despoB/kaihwang/bin/TTD/Models'
-SUB_ID="${SGE_TASK}";
+#SUB_ID="${SGE_TASK}";
 #SUB_ID=7021
 #session=Loc
 
@@ -74,7 +74,8 @@ for s in ${SUB_ID}; do
 			#rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
 
 			#first do MTD regression in native space
-			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w13+orig.HEAD ]; then
+			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
+
 				3dDeconvolve \
 				-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
 				-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
@@ -327,14 +328,14 @@ for s in ${SUB_ID}; do
 				-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
 				-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
 				-num_stimts 20 \
-				-stim_file 1 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_FFA-VC.1D -stim_label 1 MTD_FH_FFA-VC \
-				-stim_file 2 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_PPA-VC.1D -stim_label 2 MTD_FH_PPA-VC \
-				-stim_file 3 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_MTD_FFA-VC.1D -stim_label 3 MTD_HF_FFA-VC \
-				-stim_file 4 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_MTD_PPA-VC.1D -stim_label 4 MTD_HF_PPA-VC \
-				-stim_file 5 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_FFA-VC.1D -stim_label 5 MTD_H2_FFA-VC \
-				-stim_file 6 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_PPA-VC.1D -stim_label 6 MTD_H2_PPA-VC \
-				-stim_file 7 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_FFA-VC.1D -stim_label 7 MTD_F2_FFA-VC \
-				-stim_file 8 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_PPA-VC.1D -stim_label 8 MTD_F2_PPA-VC \
+				-stim_file 1 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_FFA-V1.1D -stim_label 1 MTD_FH_FFA-VC \
+				-stim_file 2 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_PPA-V1.1D -stim_label 2 MTD_FH_PPA-VC \
+				-stim_file 3 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_MTD_FFA-V1.1D -stim_label 3 MTD_HF_FFA-VC \
+				-stim_file 4 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_MTD_PPA-V1.1D -stim_label 4 MTD_HF_PPA-VC \
+				-stim_file 5 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_FFA-V1.1D -stim_label 5 MTD_H2_FFA-VC \
+				-stim_file 6 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_PPA-V1.1D -stim_label 6 MTD_H2_PPA-VC \
+				-stim_file 7 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_FFA-V1.1D -stim_label 7 MTD_F2_FFA-VC \
+				-stim_file 8 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_PPA-V1.1D -stim_label 8 MTD_F2_PPA-VC \
 				-stim_file 9 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_FFA.1D -stim_label 9 BC_FH_FFA \
 				-stim_file 10 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_PPA.1D -stim_label 10 BC_FH_PPA \
 				-stim_file 11 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_FFA.1D -stim_label 11 BC_HF_FFA \
@@ -343,10 +344,10 @@ for s in ${SUB_ID}; do
 				-stim_file 14 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_PPA.1D -stim_label 14 BC_F2_PPA \
 				-stim_file 15 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_FFA.1D -stim_label 15 BC_H2_FFA \
 				-stim_file 16 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_PPA.1D -stim_label 16 BC_H2_PPA \
-				-stim_file 17 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_VC.1D -stim_label 17 BC_FH_VC \
-				-stim_file 18 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_VC.1D -stim_label 18 BC_HF_VC \
-				-stim_file 19 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_VC.1D -stim_label 19 BC_H2_VC \
-				-stim_file 20 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_VC.1D -stim_label 20 BC_F2_VC \
+				-stim_file 17 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_V1.1D -stim_label 17 BC_FH_VC \
+				-stim_file 18 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_V1.1D -stim_label 18 BC_HF_VC \
+				-stim_file 19 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_BC_V1.1D -stim_label 19 BC_H2_VC \
+				-stim_file 20 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_BC_V1.1D -stim_label 20 BC_F2_VC \
 				-num_glt 19 \
 				-gltsym 'SYM: +0.5*MTD_FH_FFA-VC +0.5*MTD_HF_PPA-VC' -glt_label 1 MTD_Target_1bk \
 				-gltsym 'SYM: +0.5*MTD_HF_FFA-VC +0.5*MTD_FH_PPA-VC' -glt_label 2 MTD_Distractor_1bk \
