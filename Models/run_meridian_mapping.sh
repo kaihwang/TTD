@@ -4,8 +4,8 @@
 WD='/home/despoB/kaihwang/TRSE/TTD'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 #SUB_ID=7018
-ses=Ret
-for subject in 7019; do
+ses=${session}
+for subject in ${SUB_ID}; do
 
 	#convert freesurfer skullstrip brain as underlay
 	mri_convert /home/despoB/kaihwang/TRSE/TTD/fmriprep/freesurfer/sub-${subject}/mri/brain.mgz ${OutputDir}/sub-${subject}/ses-${ses}/brain.nii.gz

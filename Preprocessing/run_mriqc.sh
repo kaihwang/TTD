@@ -14,7 +14,10 @@ n_raw=$(/bin/ls ${WD}/BIDS/sub-${SUB_ID}/ses-${session}/func/*task-TDD*bold.nii.
 
 if [ "${nruns}" != "${n_raw}" ]; then
     mriqc \
-        --participant_label $SUB_ID \
+        ${WD}/BIDS/ \
+        ${WD}/QC/ \
+        participant group \
+         --participant_label $SUB_ID \
         --session-id ${session} \
         -m T1w bold \
         --n_procs 4 \
@@ -22,10 +25,7 @@ if [ "${nruns}" != "${n_raw}" ]; then
         --ica \
         --ants-nthreads 4 \
         -w ${WD}/QC/work \
-        --verbose-reports \
-        ${WD}/BIDS/ \
-        ${WD}/QC/ \
-        participant group 
+        --verbose-reports
 fi
 
 END_TIME=$(date);

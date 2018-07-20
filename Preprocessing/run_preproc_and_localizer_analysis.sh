@@ -48,7 +48,7 @@ echo "${SUB_ID} ${session} ${nruns}" | python ${SCRIPTS}/parse_stim.py
 
 
 ##MTD model
-. ${Model}/run_MTD_reg_model.sh
+#. ${Model}/run_MTD_reg_model.sh
 
 
 ##Retinotopy
@@ -59,8 +59,8 @@ if [ ${session} = Loc ]; then
 		@SUMA_Make_Spec_FS -sid sub-${SUB_ID}
 	fi
 
-	#if [ ! -d ${WD}/Results/sub-${SUB_ID}/ses-Loc/${SUB_ID}_meridian.results ]; then
-	#	. ${Model}/run_meridian_mapping.sh
-	#fi
+	if [ ! -d ${WD}/Results/sub-${SUB_ID}/ses-Loc/${SUB_ID}_meridian.results ]; then
+		. ${Model}/run_meridian_mapping.sh
+	fi
 fi
 
