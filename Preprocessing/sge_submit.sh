@@ -18,10 +18,10 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
  #  	-f ${SCRIPTS}/test.subjects \
  #  	-o ${SCRIPTS}/qsub.options
 
-# submit \
-# 	-s ${SCRIPTS}/rerun_MTD.sh \
-# 	-f ${SCRIPTS}/test.subjects \
-# 	-o ${SCRIPTS}/qsub.options
+submit \
+	-s ${SCRIPTS}/rerun_MTD.sh \
+	-f ${SCRIPTS}/test.subjects \
+	-o ${SCRIPTS}/qsub.options
 
 
 
@@ -46,8 +46,8 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 # done
 
 
-for Subject in 7022 7024 7025 7026 7027; do
-	sed "s/s in 7003/s in ${Subject}/g" < ${SCRIPTS}/flatsurf.sh > /home/despoB/kaihwang/tmp/fs${Subject}.sh 
-	qsub -V -M kaihwang -m e -e ~/tmp -o ~/tmp /home/despoB/kaihwang/tmp/fs${Subject}.sh
+# for Subject in 7022 7024 7025 7026 7027; do
+# 	sed "s/s in 7003/s in ${Subject}/g" < ${SCRIPTS}/flatsurf.sh > /home/despoB/kaihwang/tmp/fs${Subject}.sh 
+# 	qsub -V -M kaihwang -m e -e ~/tmp -o ~/tmp /home/despoB/kaihwang/tmp/fs${Subject}.sh
 
-done
+# done

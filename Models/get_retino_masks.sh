@@ -1,7 +1,7 @@
 
 
 
-for s in 7018; do
+for s in 7022 7024 7025 7026 7027; do
 
 	cd /home/despoB/kaihwang/TRSE/TTD/Results/sub-${s}/ses-Loc/${s}_meridian.results
 
@@ -20,7 +20,7 @@ for s in 7018; do
 		-map_function mode
 
 		3dresample -inset /home/despoB/kaihwang/TRSE/TTD/Results/sub-${s}/ses-Loc/${roi}.nii.gz \
-		-master /home/despoB/kaihwang/TRSE/TTD/Results/sub-${s}/ses-Ips/Localizer_FIR_errts.nii.gz \
+		-master /home/despoB/kaihwang/TRSE/TTD/Results/sub-${s}/ses-Loc/Localizer_FIR_errts.nii.gz \
 		-prefix /home/despoB/kaihwang/TRSE/TTD/Results/sub-${s}/ses-Loc/${roi}_indiv_ROIFIR.nii.gz
 	done
 	

@@ -44,12 +44,12 @@ for s in ${SUB_ID}; do
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
 	fi
 	
-	# for ROI in V1 FFA PPA V1v V1d V2v V2d V3v V3d V3a V4v; do
+	for ROI in V1 FFA PPA V1v V1d V2v V2d V3v V3d V3a V4v; do
 
-	# 	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/${ROI}_indiv_ROIFIR.nii.gz -q \
-	# 	${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/${ROI}_allruns_ts.1D
+		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/${ROI}_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/${ROI}_allruns_ts.1D
 
-	# done
+	done
 
 	for w in 5 10 15 20; do
 		
