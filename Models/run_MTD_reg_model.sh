@@ -43,11 +43,29 @@ for s in ${SUB_ID}; do
 	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ts.1D
 	fi
+
+	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ng_ts.1D ]; then
+	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/FFA_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_ng_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ng_ts.1D
+	fi
+	
+	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ng_ts.1D ]; then
+	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/PPA_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_ng_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ng_ts.1D
+	fi	
+	
+	if [ ! -s ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_tng_s.1D ]; then
+	3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/V1_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_ng_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/V1_allruns_ng_ts.1D
+	fi
 	
 	for ROI in V1 FFA PPA V1v V1d V2v V2d V3v V3d V3a V4v; do
 
 		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/${ROI}_indiv_ROIFIR.nii.gz -q \
 		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/${ROI}_allruns_ts.1D
+
+		3dmaskave -mask ${OutputDir}/sub-${s}/ses-Loc/${ROI}_indiv_ROIFIR.nii.gz -q \
+		${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_ng_errts.nii.gz > ${OutputDir}/sub-${s}/ses-${session}/${ROI}_allruns_ng_ts.1D
 
 	done
 
@@ -64,6 +82,14 @@ for s in ${SUB_ID}; do
 		
 		for ROI in V1 V1d V1v V2d V2v V3d V3v V3a V4v; do
 			vc_path="${OutputDir}/sub-${s}/ses-${session}/${ROI}_allruns_ts.1D"
+			echo "${n_runs} ${ntp_per_run} ${window} ${s} ${session} ${ffa_path} ${ppa_path} ${vc_path} ${ROI}" | python ${Model}/create_MTD_regressors.py
+		done
+
+		ffa_path="${OutputDir}/sub-${s}/ses-${session}/FFA_allruns_ng_ts.1D"
+		ppa_path="${OutputDir}/sub-${s}/ses-${session}/PPA_allruns_ng_ts.1D"
+		
+		for ROI in V1 V1d V1v V2d V2v V3d V3v V3a V4v; do
+			vc_path="${OutputDir}/sub-${s}/ses-${session}/${ROI}_allruns_ng_ts.1D"
 			echo "${n_runs} ${ntp_per_run} ${window} ${s} ${session} ${ffa_path} ${ppa_path} ${vc_path} ${ROI}" | python ${Model}/create_MTD_regressors.py
 		done
 			

@@ -12,10 +12,18 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Models'
 # 	-o ${SCRIPTS}/qsub.options.FIR_model
 
 
-submit \
-	-s ${SCRIPTS}/run_MTD_reg_model.sh \
-	-f ${SCRIPTS}/test.subjects \
-	-o ${SCRIPTS}/qsub.options.MTD_model
+
+for Subject in 7002 7003 7004 7006 7008 7009 7012 7014 7016 7017 7018 7019; do
+	sed "s/s in 7002/s in ${Subject}/g" < ${SCRIPTS}/run_MTD_py.sh> ~/tmp/mtdpy_${Subject}.sh
+	qsub -l mem_free=5G -V -M kaihwang -m e -e ~/tmp -o ~/tmp ~/tmp/mtdpy_${Subject}.sh
+done
+
+
+
+# submit \
+# 	-s ${SCRIPTS}/run_MTD_reg_model.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options.MTD_model
 
 
 # cd ${WD}

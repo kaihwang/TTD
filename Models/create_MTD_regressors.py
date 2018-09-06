@@ -105,9 +105,9 @@ if __name__ == "__main__":
 			Seed_VC[r,:] = TS_V1_runs[r,:]
 
 
-		fn = output_path + '%s_%s_%s_MTD_FFA-%s.1D'	%(subject,ses, condition, VC)
+		fn = output_path + '%s_%s_%s_MTD_w%s_FFA-%s.1D'	%(subject,ses, condition, window, VC)
 		np.savetxt(fn, MTD_FFA.flatten())
-		fn = output_path +  '%s_%s_%s_MTD_PPA-%s.1D'	%(subject,ses, condition, VC)
+		fn = output_path +  '%s_%s_%s_MTD_w%s_PPA-%s.1D'	%(subject,ses, condition, window, VC)
 		np.savetxt(fn, MTD_PPA.flatten())
 		fn = output_path +  '%s_%s_%s_BC_FFA.1D'	%(subject,ses, condition)
 		np.savetxt(fn, Seed_FFA.flatten())
