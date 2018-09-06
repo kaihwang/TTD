@@ -52,15 +52,15 @@ echo "${SUB_ID} ${session} ${nruns}" | python ${SCRIPTS}/parse_stim.py
 
 
 ##Retinotopy
-if [ ${session} = Loc ]; then
-	#create	SUMA surfaces
-	if [ ! -d ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/SUMA ]; then
-		cd ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/
-		@SUMA_Make_Spec_FS -sid sub-${SUB_ID}
-	fi
+# if [ ${session} = Loc ]; then
+# 	#create	SUMA surfaces
+# 	if [ ! -d ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/SUMA ]; then
+# 		cd ${WD}/fmriprep/freesurfer/sub-${SUB_ID}/
+# 		@SUMA_Make_Spec_FS -sid sub-${SUB_ID}
+# 	fi
 
-	if [ ! -d ${WD}/Results/sub-${SUB_ID}/ses-Loc/${SUB_ID}_meridian.results ]; then
-		. ${Model}/run_meridian_mapping.sh
-	fi
-fi
+# 	if [ ! -d ${WD}/Results/sub-${SUB_ID}/ses-Loc/${SUB_ID}_meridian.results ]; then
+# 		. ${Model}/run_meridian_mapping.sh
+# 	fi
+# fi
 
