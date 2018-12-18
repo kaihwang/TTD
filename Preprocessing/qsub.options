@@ -5,5 +5,6 @@
 -pe threaded 4
 -binding linear:4
 -l mem_free=15.5G 
--l h="nx2|nx7|nx8|nx10|nx11|nx13|nx14|nx15|nx16|nx17|nx18|nx19|nx20|nx21|nx22|nx24|nx25|nx26|nx27|nx28|nx29"
+-l h="nx2|nx7|nx8|nx10|nx11|nx13|nx14|nx15|nx16|nx17|nx18|nx19|nx20|nx22|nx24|nx25|nx26|nx27|nx28|nx29|nx21"
 -M kai.hwang@gmail.com
+-V

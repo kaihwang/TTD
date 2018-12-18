@@ -13,16 +13,28 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
  # 	-o ${SCRIPTS}/qsub.options
 
 
-submit \
-	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
-	-f ${SCRIPTS}/test.subjects \
-	-o ${SCRIPTS}/qsub.options
+# submit \
+# 	-s ${SCRIPTS}/run_preproc_and_localizer_analysis.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options
 
 # submit \
 # 	-s ${SCRIPTS}/rerun_MTD.sh \
 # 	-f ${SCRIPTS}/test.subjects \
 # 	-o ${SCRIPTS}/qsub.options
 
+
+
+# submit \
+# 	-s ${SCRIPTS}/run_mriqc_f5.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options
+
+
+submit \
+	-s ${SCRIPTS}/run_preproc_f5.sh \
+	-f ${SCRIPTS}/test.subjects \
+	-o ${SCRIPTS}/qsub.options
 
 
 # cd ${WD}

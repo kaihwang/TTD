@@ -15,13 +15,13 @@ for contrast in MTD_Target_2bk-1bk MTD_Target_1bk-categorize MTD_Target_2bk-cate
 	for w in 5 10 15 20; do
 		for dset in V1 V4v; do #V1 V1d V1v V2d V2v V3a V3d V3v V4v
 			echo "cd /home/despoB/kaihwang/TRSE/TTD/Group 
-			3dMEMA -prefix /home/despoB/kaihwang/TRSE/TTD/Group/${dset}_${contrast}_w${w}_groupMEMA \\
+			3dMEMA -prefix /home/despoB/kaihwang/TRSE/TTD/Group2/${dset}_${contrast}_w${w}_groupMEMA \\
 			-set ${contrast} \\" > /home/despoB/kaihwang/TRSE/TTD/Group/groupstat_${dset}_${contrast}_${w}.sh
 
 			cd ${data}
 			
 			# MTD_BC_stats_w20_MNI_V2v_REML+tlrc
-			for s in sub-7002 sub-7003 sub-7004 sub-7006 sub-7008 sub-7009 sub-7012 sub-7014 sub-7016 sub-7017 sub-7018 sub-7019; do 
+			for s in sub-7002 sub-7003 sub-7004 sub-7006 sub-7008 sub-7009 sub-7012 sub-7014 sub-7016 sub-7017 sub-7018 sub-7019 sub-7009 sub-7012 sub-7014 sub-7016 sub-7017 sub-7018 sub-7019; do 
 
 				if [ -e ${data}/${s}/ses-Loc/MTD_BC_stats_w${w}_MNI_${dset}_REML+orig.HEAD ]; then
 					cbrik=$(3dinfo -verb ${data}/${s}//ses-Loc/MTD_BC_stats_w${w}_MNI_${dset}_REML+orig | grep "${contrast}#0_Coef" | grep -o ' #[0-9]\{1,3\}' | grep -o '[0-9]\{1,3\}')
