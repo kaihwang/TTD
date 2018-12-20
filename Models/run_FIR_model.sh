@@ -90,7 +90,7 @@ for s in ${SUB_ID}; do
 		
 	#run localizer Model
 	#FIR model
-	if [ ${session} = Loc ]; then
+	if [ ${session} = Loc ] || [ ${session} == loc ]; then
 		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz ]; then
 			3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | sort -V) \
 			-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
@@ -128,7 +128,9 @@ for s in ${SUB_ID}; do
 			-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
 			-allzero_OK	-jobs 4
 		fi
+		#-gltsym 'SYM: +1*Fp[2..7] -1*Hp[2..7] ' -glt_label 1 F-H \
 
+		#no gsr
 		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_ng_errts.nii.gz ]; then
 			3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | sort -V) \
 			-mask ${OutputDir}/sub-${s}/ses-${session}/union_mask.nii.gz \
@@ -168,6 +170,7 @@ for s in ${SUB_ID}; do
 		fi
 	fi
 
+	## not baseline localizer session
 	if [ ${session} != Loc ]; then
 		if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz ]; then
 			3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-T1w_smoothed_scaled_preproc.nii.gz | sort -V) \

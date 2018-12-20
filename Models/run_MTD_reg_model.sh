@@ -7,8 +7,8 @@ SCRIPTS='/home/despoB/kaihwang/TRSE/TTD/ScanLogs'
 OutputDir='/home/despoB/kaihwang/TRSE/TTD/Results'
 Model='/home/despoB/kaihwang/bin/TTD/Models'
 #SUB_ID="${SGE_TASK}";
-SUB_ID=7002
-session=Ips
+#SUB_ID=7002
+#session=Ips
 
 echo "running MTD regression model for subject ${SUB_ID}, session ${session}"
 

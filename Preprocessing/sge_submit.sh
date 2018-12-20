@@ -25,10 +25,10 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 
 
 
-# submit \
-# 	-s ${SCRIPTS}/run_mriqc_f5.sh \
-# 	-f ${SCRIPTS}/test.subjects \
-# 	-o ${SCRIPTS}/qsub.options
+ # submit \
+ # 	-s ${SCRIPTS}/run_mriqc_f5.sh \
+ # 	-f ${SCRIPTS}/test.subjects \
+ # 	-o ${SCRIPTS}/qsub.options
 
 
 submit \
