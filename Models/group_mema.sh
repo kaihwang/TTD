@@ -11,8 +11,8 @@ data='/home/despoB/kaihwang/TRSE/TTD/Results/'
 
 
 
-for contrast in MTD_Target_2bk-1bk MTD_Target_1bk-categorize MTD_Target_2bk-categorize MTD_1bk_Target-Distractor MTD_2bk_Target-Distractor; do
-	for w in 5 10 15 20; do
+for contrast in MTD_Target_2bk-1bk MTD_2bk_Target-Distractor; do #MTD_Target_1bk-categorize MTD_Target_2bk-categorize MTD_1bk_Target-Distractor
+	for w in 15; do
 		for dset in V1 V4v; do #V1 V1d V1v V2d V2v V3a V3d V3v V4v
 			echo "cd /home/despoB/kaihwang/TRSE/TTD/Group 
 			3dMEMA -prefix /home/despoB/kaihwang/TRSE/TTD/Group2/${dset}_${contrast}_w${w}_groupMEMA \\
@@ -31,7 +31,7 @@ for contrast in MTD_Target_2bk-1bk MTD_Target_1bk-categorize MTD_Target_2bk-cate
 				fi
 			done
 
-			for s in sub-7021 sub-7022 sub-7024 sub-7025 sub-7026 sub-7027; do #diff ver of fmriprep gave diff header
+			for s in sub-7021 sub-7022 sub-7024 sub-7025 sub-7026 sub-7027 sub-6601 sub-6602 sub-6603 sub-6605 sub-6617; do #diff ver of fmriprep gave diff header
 				
 				if [ -e ${data}/${s}/ses-Loc/MTD_BC_stats_w${w}_MNI_${dset}_REML+tlrc.HEAD ]; then
 					cbrik=$(3dinfo -verb ${data}/${s}//ses-Loc/MTD_BC_stats_w${w}_MNI_${dset}_REML+tlrc | grep "${contrast}#0_Coef" | grep -o ' #[0-9]\{1,3\}' | grep -o '[0-9]\{1,3\}')
