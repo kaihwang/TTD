@@ -9,6 +9,7 @@ Model='/home/despoB/kaihwang/bin/TTD/Models'
 #SUB_ID="${SGE_TASK}";
 #SUB_ID=7002
 #session=Ips
+jobN=2
 
 echo "running MTD regression model for subject ${SUB_ID}, session ${session}"
 
@@ -71,7 +72,7 @@ for s in ${SUB_ID}; do
 
 	# done
 
-	for w in 5 10 15 20; do
+	for w in 15; do #5 10 15 20
 		
 		
 		#create MTD and BC regressors, use ${Model}/create_MTD_regressor.py
@@ -104,7 +105,7 @@ for s in ${SUB_ID}; do
 			#rm ${OutputDir}/sub-${s}/ses-${session}/MTD*
 
 			#first do MTD regression in native space
-			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w}+orig.HEAD ]; then
+			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}+orig.HEAD ]; then
 
 				3dDeconvolve \
 				-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_errts.nii.gz \
@@ -179,17 +180,17 @@ for s in ${SUB_ID}; do
 				-nocout \
 				-bucket ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w} \
 				-GOFORIT 100 \
-				-noFDR -jobs 4
+				-noFDR -jobs ${jobN}
 				#-fout \
 				#-rout \
 
 				#results from 3dREMLfit cannot be saved into AFNI format or header info will be lost
 				. ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}.REML_cmd
-				3dTcat -prefix ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w} ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_REML+orig[61..128]
+				#3dTcat -prefix ${OutputDir}/sub-${s}/ses-${session}/GLTresults_w${w} ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_REML+orig[61..128]
 			fi	
 
 			# then do MTD regression in MNI space
-			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_MNI+orig.HEAD ]; then
+			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}//MTD_BC_stats_w${w}_MNI_${ROI}+tlrc.HEAD ]; then
 
 				#preproc in MNI space
 				for run in $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-*_space-MNI152NLin2009cAsym_preproc.nii.gz | grep -o 'run-[[:digit:]][[:digit:]][[:digit:]]'  | grep -o "[[:digit:]][[:digit:]][[:digit:]]"); do
@@ -264,7 +265,7 @@ for s in ${SUB_ID}; do
 
 
 				#do MTD
-				for ROI in V1 V1d V1v V2d V2v V3d V3v V3a V4v; do 
+				for ROI in V1 ; do  #V1d V1v V2d V2v V3d V3v V3a V4v
 
 					3dDeconvolve \
 					-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_MNI_errts.nii.gz \
@@ -279,9 +280,9 @@ for s in ${SUB_ID}; do
 					-stim_file 7 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_MTD_w${w}_FFA-${ROI}.1D -stim_label 7 MTD_Fp_FFA-VC \
 					-stim_file 8 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_Fp_MTD_w${w}_PPA-${ROI}.1D -stim_label 8 MTD_Fp_PPA-VC \
 					-stim_file 9 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_w${w}_FFA-${ROI}.1D -stim_label 9 MTD_H2_FFA-VC \
-					-stim_file 10 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_PPA-${ROI}.1D -stim_label 10 MTD_H2_PPA-VC \
-					-stim_file 11 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_FFA-${ROI}.1D -stim_label 11 MTD_F2_FFA-VC \
-					-stim_file 12 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_PPA-${ROI}.1D -stim_label 12 MTD_F2_PPA-VC \
+					-stim_file 10 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_H2_MTD_w${w}_PPA-${ROI}.1D -stim_label 10 MTD_H2_PPA-VC \
+					-stim_file 11 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_w${w}_FFA-${ROI}.1D -stim_label 11 MTD_F2_FFA-VC \
+					-stim_file 12 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_F2_MTD_w${w}_PPA-${ROI}.1D -stim_label 12 MTD_F2_PPA-VC \
 					-stim_file 13 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_FFA.1D -stim_label 13 BC_FH_FFA \
 					-stim_file 14 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_BC_PPA.1D -stim_label 14 BC_FH_PPA \
 					-stim_file 15 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_HF_BC_FFA.1D -stim_label 15 BC_HF_FFA \
@@ -339,7 +340,7 @@ for s in ${SUB_ID}; do
 					-nocout \
 					-bucket ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_MNI_${ROI} \
 					-GOFORIT 100 \
-					-noFDR -jobs 4
+					-noFDR -jobs ${jobN}
 					#-fout \
 					#-rout \
 
@@ -412,7 +413,7 @@ for s in ${SUB_ID}; do
 				-noFDR \
 				-nocout \
 				-errts ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_MNI_errts.nii.gz \
-				-allzero_OK	-jobs 4
+				-allzero_OK	-jobs ${jobN}
 			fi
 
 			
@@ -487,7 +488,7 @@ for s in ${SUB_ID}; do
 				-nocout \
 				-bucket ${OutputDir}/sub-${s}/ses-${session}/MTD_BC_stats_w${w}_MNI \
 				-GOFORIT 100 \
-				-noFDR -jobs 4
+				-noFDR -jobs ${jobN}
 				#-fout \
 				#-rout \
 
