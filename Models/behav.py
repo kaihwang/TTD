@@ -11,8 +11,8 @@ def pivot_behav():
 	#i=0
 	
 	rows = ['Subj', 'Cond', 'Motor', 'Match', 'Accu', 'FA', 'RH', 'LH', 'RT', 'OT', 'fn']
-	subjects = [7002, 7003, 7004, 7006, 7008, 7009, 7012, 7014, 7016, 7017, 7018, 7019]
-	sessions = ['Ips', 'S1']
+	subjects = [7002, 7003, 7004, 7006, 7008, 7009, 7012, 7014, 7016, 7017, 7018, 7019, 7021,7022,7024,7025,7026,7027,6601, 6602, 6603, 6605, 6617]
+	sessions = ['loc', 'Loc']
 
 
 	df = pd.DataFrame() 
@@ -67,6 +67,7 @@ def pivot_behav():
 	df.loc[df['Cond'] == 'HF', 'Load' ] = '1-Back'
 	df.loc[df['Cond'] == 'H2', 'Load' ] = '2-Back'		
 	df.loc[df['RT'] == -1, 'RT' ] = np.nan
+	df.loc[df['RT'] == 0, 'RT'] = np.nan
 	df = df[df['Cond']!='Hp']
 	df = df[df['Cond']!='Fp']
 
@@ -151,21 +152,13 @@ if __name__ == "__main__":
 	
 	## get behav and TR info
 	behav_df = pivot_behav()
-	
+	A=behav_df.groupby(['Subj','Cond']).mean().reset_index() 
+	A.groupby(['Cond']).mean()
+	A.groupby(['Cond']).std()
 
-	#loc_df=sum_df[sum_df['Session']=='Loc']
-
-	# run t test on localizer runs
-	#from scipy import stats
-	#stats.ttest_rel(loc_df['F2_Accu'].values, loc_df['FH_Accu'].values)
-
-
-
-		
-
-						
-		#np.mean(df[(df['Match']==1) & (df['Accu']==1)]['MTD_FFA'])
+	from scipy import stats
+	stats.ttest_rel(A.loc[A['Cond']=='F2']['Accu'], A.loc[A['Cond']=='FH']['Accu'])
 
 
 
-#df.to_csv('behav.csv')	
+
