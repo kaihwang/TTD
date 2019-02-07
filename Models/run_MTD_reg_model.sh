@@ -396,8 +396,8 @@ for s in ${SUB_ID}; do
 				-ortvec ${OutputDir}/sub-${s}/ses-${session}/nuisance.tsv confounds \
 				-stim_times 1 ${SCRIPTS}/${s}_${session}_FH_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 1 FH \
 				-stim_times 2 ${SCRIPTS}/${s}_${session}_HF_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 2 HF \
-				-stim_times 5 ${SCRIPTS}/${s}_${session}_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 3 F2 \
-				-stim_times 6 ${SCRIPTS}/${s}_${session}_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 H2 \
+				-stim_times 3 ${SCRIPTS}/${s}_${session}_F2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 3 F2 \
+				-stim_times 4 ${SCRIPTS}/${s}_${session}_H2_stimtime.1D 'TENT(-1, 12, 14)' -stim_label 4 H2 \
 				-iresp 1 ${OutputDir}/sub-${s}/ses-${session}/Localizer_FH_MNI_FIR.nii.gz \
 				-iresp 2 ${OutputDir}/sub-${s}/ses-${session}/Localizer_HF_MNI_FIR.nii.gz \
 				-iresp 3 ${OutputDir}/sub-${s}/ses-${session}/Localizer_F2_MNI_FIR.nii.gz \
