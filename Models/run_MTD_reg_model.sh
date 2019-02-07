@@ -389,7 +389,7 @@ for s in ${SUB_ID}; do
 			#FIR regression in MNI space, save risiduals
 			if [ ! -e ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_MNI_errts.nii.gz ]; then
 				3dDeconvolve -input $(/bin/ls ${WD}/fmriprep/fmriprep/sub-${s}/ses-${session}/func/sub-${s}_ses-${session}_task-TDD_run-0*_bold_space-MNI152NLin2009cAsym_smoothed_scaled_preproc.nii.gz | sort -V) \
-				-mask ${OutputDir}/sub-${s}/ses-${session}/union_MNI_mask.nii.gz \
+				-mask ${OutputDir}/sub-${s}/ses-Loc/union_MNI_mask.nii.gz \
 				-polort A \
 				-num_stimts 4 \
 				-censor ${OutputDir}/sub-${s}/ses-${session}/FD0.2_censor.1D \
@@ -442,7 +442,7 @@ for s in ${SUB_ID}; do
 
 				3dDeconvolve \
 				-input ${OutputDir}/sub-${s}/ses-${session}/Localizer_FIR_MNI_errts.nii.gz \
-				-mask ${OutputDir}/sub-${s}/ses-${session}/union_MNI_mask.nii.gz \
+				-mask ${OutputDir}/sub-${s}/ses-Loc/union_MNI_mask.nii.gz \
 				-num_stimts 20 \
 				-stim_file 1 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_w${w}_FFA-V1.1D -stim_label 1 MTD_FH_FFA-VC \
 				-stim_file 2 ${OutputDir}/sub-${s}/ses-${session}/${s}_${session}_FH_MTD_w${w}_PPA-V1.1D -stim_label 2 MTD_FH_PPA-VC \
