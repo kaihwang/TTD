@@ -1,4 +1,4 @@
- #analyze behavior data
+ #functions to compile behavior, FIR, MTD data for later graphing
 
 import pandas as pd
 import glob as glob
@@ -16,7 +16,7 @@ def pivot_behav(TMS):
 		sessions = ['Ips', 'S1']
 	else:
 		subjects = [6601, 6602, 6603, 6605, 6617, 7002, 7003, 7004, 7006, 7008, 7009, 7012, 7014, 7016, 7017, 7018, 7019]
-		sessions = ['Ips', 'S1']
+		sessions = ['Loc', 'loc']
 
 
 	df = pd.DataFrame() 
@@ -163,6 +163,7 @@ def MTD_behav():
 
 		df = df.append(tdf)			
 
+	return df	
 
 
 def get_FIR_df(): 
@@ -222,7 +223,6 @@ def get_FIR_df():
 def TMS_FIR():
 	Results_DIR = '/home/despoB/kaihwang/TRSE/TTD/Results'
 	Subjects = ['6601', '6602', '6603', '6605','6617','7002', '7003', '7004', '7006', '7008', '7009', '7012', '7014', '7016', '7017', '7018', '7019']
-	#Subjects = ['7002', '7003', '7004', '7006', '7008', '7009', '7012', '7014', '7016', '7017', '7018', '7019', '7021', '7022', '7024', '7025', '7026', '7027']
 
 	Conditions = ['H2', 'F2', 'HF', 'FH']
 	ROIs=['S1', 'Ips']
@@ -234,7 +234,7 @@ def TMS_FIR():
 	        for i, cond in enumerate(Conditions):           
 	            for cat in Category:
 	                tmpdf = pd.DataFrame()
-	                cmd = '3dmaskave -mask /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-Loc/%s_indiv_ROIFIR.nii.gz -quiet /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-%s/Localizer_%s_FIR.nii.gz > ~/tmp/tmp' %(s, cat, s, roi, cond)
+	                cmd = '3dmaskave -mask /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-Loc/%s_indiv_ROIFIR_MNI.nii.gz -quiet /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-%s/Localizer_%s_MNI_FIR.nii.gz > ~/tmp/tmp' %(s, cat, s, roi, cond)
 
 	                os.system(cmd)
 
@@ -263,7 +263,7 @@ def TMS_FIR():
 	                tmpdf['ROI'] = cat
 	                tmpdf['Volume'] = np.arange(1,len(tmpdf)+1)
 	                FIR_df = FIR_df.append(tmpdf,ignore_index=True)
-    retrun FIR_df
+	return FIR_df
 
 
 def AUC_TMS_FIR():
@@ -281,13 +281,13 @@ def AUC_TMS_FIR():
 			for i, cond in enumerate(Conditions):           
 				for cat in Category:
 					tmpdf = pd.DataFrame()
-					cmd = '3dmaskave -mask /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-Loc/%s_indiv_ROIFIR.nii.gz -quiet /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-%s/Localizer_%s_FIR.nii.gz > ~/tmp/tmp' %(s, cat, s, roi, cond)
+					cmd = '3dmaskave -mask /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-Loc/%s_indiv_ROIFIR_MNI.nii.gz -quiet /home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-%s/Localizer_%s_MNI_FIR.nii.gz > ~/tmp/tmp' %(s, cat, s, roi, cond)
 
 					os.system(cmd)
 
 					a=np.loadtxt('/home/despoB/kaihwang/tmp/tmp')
 
-					tmpdf.loc[0, 'Beta'] = np.trapz(a)
+					tmpdf.loc[0, 'Beta'] = np.trapz(a[2:10])
 					tmpdf.loc[0, 'Session'] = roi
 					tmpdf.loc[0, 'Subj'] = int(s)
 					tmpdf.loc[0, 'Condition'] = cond
@@ -311,7 +311,7 @@ def AUC_TMS_FIR():
 					tmpdf['Volume'] = np.arange(1,len(tmpdf)+1)
 					FIR_df = FIR_df.append(tmpdf,ignore_index=True) 
 
-	retrun FIR_df
+	return FIR_df
 
 
 
@@ -344,7 +344,7 @@ def get_AUC_FIR():
 
 	                a=np.loadtxt('/home/despoB/kaihwang/tmp/tmp')
 
-	                tmpdf.loc[0,'Beta'] = np.trapz(a)
+	                tmpdf.loc[0,'Beta'] = np.trapz(a[2:10])
 	                tmpdf.loc[0,'Session'] = roi
 	                tmpdf.loc[0,'Subj'] = int(s)
 	                tmpdf.loc[0,'Condition'] = cond
@@ -368,14 +368,67 @@ def get_AUC_FIR():
 	return AUC_df
 
 
+def get_TMS_MTD():
+	Results_DIR = '/home/despoB/kaihwang/TRSE/TTD/Results'
+	Subjects = [6601, 6602, 6603, 6605, 6617, 7002, 7003, 7004, 7006, 7008, 7009, 7012, 7014, 7016, 7017, 7018, 7019]
+	Conditions = ['H2', 'F2', 'HF', 'FH']
+	ROIs=['S1', 'Ips'] #Loc
+	Source=['V1']
+	Target=['FFA', 'PPA']
+	Window=[15]
+
+	MTD_df = pd.DataFrame()
+	i=0
+	for s in Subjects:
+	    for roi in ROIs:
+	        for _, cond in enumerate(Conditions):
+	            #tmpdf = pd.DataFrame()
+	            for t in Target:
+	                for o in Source:
+	                    for w in Window:
+	                        fn ='/home/despoB/kaihwang/TRSE/TTD/Results/sub-%s/ses-%s/%s_%s_%s_MTD_w%s_%s-%s.1D' %(s, roi, s, roi,cond,w,t,o)
+	                        a=np.loadtxt(fn)
+	                        MTD_df.loc[i, 'MTD'] = np.nanmean(a[a!=0])
+	                        MTD_df.loc[i, 'ROI'] = roi
+	                        MTD_df.loc[i, 'Subj'] = int(s)
+	                        MTD_df.loc[i,'Condition'] = cond
+	                        
+	                        if cond == 'H2':
+	                            MTD_df.loc[i,'Load'] = '2-Back'
+	                            MTD_df.loc[i,'Category'] = 'Buildings'
+	                        elif cond =='F2':
+	                            MTD_df.loc[i,'Load'] = '2-Back'
+	                            MTD_df.loc[i,'Category'] = 'Faces'
+	                        elif cond == 'HF':
+	                            MTD_df.loc[i,'Load'] = '1-Back'
+	                            MTD_df.loc[i,'Category'] = 'Buildings'
+	                        elif cond == 'FH':
+	                            MTD_df.loc[i,'Load'] = '1-Back'
+	                            MTD_df.loc[i,'Category'] = 'Faces'
+	                        
+	                        MTD_df.loc[i,'Source'] = o
+	                        MTD_df.loc[i,'Target'] = t
+	                        MTD_df.loc[i,'Window'] = int(w)
+	                        i=i+1
+	return MTD_df                        
+	 
 if __name__ == "__main__":
 
 	
 	## get behav and TR info
-	#TMS_behav_df = pivot_behav(TMS=True)
-	FIR_df = AUC_TMS_FIR()
+	#behav_df = pivot_behav(TMS=False)
+	#behav_df.to_csv('behav_df.csv')
+	#AUC_df = get_AUC_FIR()
+	#AUC_df.to_csv('AUC_df.csv')
 	#FIR_df = get_FIR_df()
-	#AUC_FIR = get_AUC_FIR()
+	#FIR_df.to_csv('FID_df.csv')
+	#TMS_behav_df = pivot_behav(TMS=True)
+	#TMS_behav_df.to_csv('TMS_behav_df.csv')
+	TMS_FIR = TMS_FIR()
+	TMS_FIR.to_csv('TMS_FIR.csv')
+	#AUC_TMS_FIR = AUC_TMS_FIR()
+	#AUC_TMS_FIR.to_csv('AUC_TMS_FIR.csv')
+
 
 
 
