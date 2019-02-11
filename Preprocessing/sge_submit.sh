@@ -18,10 +18,10 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
 # 	-f ${SCRIPTS}/test.subjects \
 # 	-o ${SCRIPTS}/qsub.options
 
-# submit \
-# 	-s ${SCRIPTS}/rerun_MTD.sh \
-# 	-f ${SCRIPTS}/test.subjects \
-# 	-o ${SCRIPTS}/qsub.options
+submit \
+	-s ${SCRIPTS}/rerun_MTD.sh \
+	-f ${SCRIPTS}/test.subjects \
+	-o ${SCRIPTS}/qsub.options
 
 
 
@@ -31,10 +31,10 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Preprocessing'
  # 	-o ${SCRIPTS}/qsub.options
 
 
-submit \
-	-s ${SCRIPTS}/run_preproc_f5.sh \
-	-f ${SCRIPTS}/test.subjects \
-	-o ${SCRIPTS}/qsub.options
+# submit \
+# 	-s ${SCRIPTS}/run_preproc_f5.sh \
+# 	-f ${SCRIPTS}/test.subjects \
+# 	-o ${SCRIPTS}/qsub.options
 
 
 # cd ${WD}

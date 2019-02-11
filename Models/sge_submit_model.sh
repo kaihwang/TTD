@@ -13,9 +13,9 @@ SCRIPTS='/home/despoB/kaihwang/bin/TTD/Models'
 
 
 
-for Subject in 7002 7003 7004 7006 7008 7009 7012 7014 7016 7017 7018 7019 7021 7022 7024 7025 7026 7027; do
-	sed "s/s in 7002/s in ${Subject}/g" < ${SCRIPTS}/run_MTD_py.sh> ~/tmp/mtdpy_${Subject}.sh
-	qsub -l mem_free=5G -V -M kaihwang -m e -e ~/tmp -o ~/tmp ~/tmp/mtdpy_${Subject}.sh
+for Subject in 7001 7002 7003 7004 7006 7008 7009 7012 7014 7016 7017 7018 7019; do
+	sed "s/s in 7001/s in ${Subject}/g" < ${SCRIPTS}/run_MNI_reg.sh> ~/tmp/mtdpy_${Subject}.sh
+	qsub -l mem_free=12G -V -M kaihwang -m e -e ~/tmp -o ~/tmp ~/tmp/mtdpy_${Subject}.sh
 done
 
 

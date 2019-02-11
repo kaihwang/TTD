@@ -74,7 +74,7 @@ def parse_stim(s, ROI, ntrials_per_run, num_runs):
 	for i in np.arange(1, len(timing_logs), 1):
 		df = df.append(pd.read_table(timing_logs[i], header= None))
 	# give each column a name.
-	df.columns = ['SubjID', 'Condition', 'MotorMapping', 'Target', 'Accu', 'FA', 'RH', 'LH', 'RT', 'OnsetTime', 'pic']
+	df.columns = ['SubjID', 'Condition', 'MotorMapping', 'Target', 'Accu', 'FA', 'RH', 'LH', 'RT', 'OnsetTime']
 
 	# create new column variable of "run number" for every trial (48 trials per run). 12 blocks totoal 
 	df['Run'] = np.repeat(np.arange(1, num_runs+1), ntrials_per_run)
